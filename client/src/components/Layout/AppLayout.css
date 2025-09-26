@@ -1,0 +1,182 @@
+/* App Layout with Apple-inspired design */
+.app-layout {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    #f5f7fa 0%,
+    #e8f4f8 25%,
+    #f2f7fa 50%,
+    #e1ebf0 100%);
+  background-attachment: fixed;
+}
+
+.main-content {
+  height: 100vh;
+  padding: 32px;
+  padding-bottom: 120px; /* Space for dock */
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+/* Background gradient orbs for depth */
+.background-effects {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+  animation: float 20s ease-in-out infinite;
+}
+
+.gradient-orb-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.4) 0%, transparent 70%);
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
+}
+
+.gradient-orb-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 204, 0, 0.3) 0%, transparent 70%);
+  top: 50%;
+  right: -150px;
+  animation-delay: -10s;
+}
+
+.gradient-orb-3 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(52, 199, 89, 0.2) 0%, transparent 70%);
+  bottom: -250px;
+  left: 30%;
+  animation-delay: -5s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -30px) rotate(90deg);
+  }
+  50% {
+    transform: translate(-20px, 20px) rotate(180deg);
+  }
+  75% {
+    transform: translate(-30px, -10px) rotate(270deg);
+  }
+}
+
+/* Custom scrollbar */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .app-layout {
+    background: linear-gradient(135deg,
+      #1c1c1e 0%,
+      #2c2c2e 25%,
+      #1c1c1e 50%,
+      #0a0a0a 100%);
+  }
+
+  .gradient-orb-1 {
+    background: radial-gradient(circle, rgba(10, 132, 255, 0.3) 0%, transparent 70%);
+  }
+
+  .gradient-orb-2 {
+    background: radial-gradient(circle, rgba(255, 214, 10, 0.2) 0%, transparent 70%);
+  }
+
+  .gradient-orb-3 {
+    background: radial-gradient(circle, rgba(48, 209, 88, 0.15) 0%, transparent 70%);
+  }
+
+  .main-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .main-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .main-content {
+    padding: 24px;
+    padding-bottom: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+
+  .gradient-orb-1 {
+    width: 250px;
+    height: 250px;
+  }
+
+  .gradient-orb-2 {
+    width: 200px;
+    height: 200px;
+  }
+
+  .gradient-orb-3 {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* Performance optimizations */
+.gradient-orb {
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-orb {
+    animation: none;
+  }
+}
