@@ -137,6 +137,45 @@ class ApiService {
     localStorage.removeItem('user');
   }
 
+  // User management endpoints
+  async getUsers() {
+    const response = await this.axiosInstance.get('/users');
+    return response.data;
+  }
+
+  async getUser(userId: string) {
+    const response = await this.axiosInstance.get(`/users/${userId}`);
+    return response.data;
+  }
+
+  async createUser(userData: {
+    username: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    role?: string;
+    isActive?: boolean;
+  }) {
+    const response = await this.axiosInstance.post('/users', userData);
+    return response.data;
+  }
+
+  async updateUser(userId: string, userData: any) {
+    const response = await this.axiosInstance.put(`/users/${userId}`, userData);
+    return response.data;
+  }
+
+  async deleteUser(userId: string) {
+    const response = await this.axiosInstance.delete(`/users/${userId}`);
+    return response.data;
+  }
+
+  async toggleUserStatus(userId: string) {
+    const response = await this.axiosInstance.patch(`/users/${userId}/toggle-status`);
+    return response.data;
+  }
+
   // Project endpoints
   async getProjects() {
     const response = await this.axiosInstance.get('/projects');
@@ -216,6 +255,60 @@ class ApiService {
 
   async deleteBoard(boardId: string) {
     const response = await this.axiosInstance.delete(`/boards/${boardId}`);
+    return response.data;
+  }
+
+  // Role management endpoints
+  async getRoles() {
+    const response = await this.axiosInstance.get('/roles');
+    return response.data;
+  }
+
+  async getRole(roleId: string) {
+    const response = await this.axiosInstance.get(`/roles/${roleId}`);
+    return response.data;
+  }
+
+  async createRole(roleData: {
+    name: string;
+    description?: string;
+    permissions: string[];
+  }) {
+    const response = await this.axiosInstance.post('/roles', roleData);
+    return response.data;
+  }
+
+  async updateRole(roleId: string, roleData: {
+    name?: string;
+    description?: string;
+    permissions?: string[];
+  }) {
+    const response = await this.axiosInstance.put(`/roles/${roleId}`, roleData);
+    return response.data;
+  }
+
+  async deleteRole(roleId: string) {
+    const response = await this.axiosInstance.delete(`/roles/${roleId}`);
+    return response.data;
+  }
+
+  async getUserRoles(userId: string) {
+    const response = await this.axiosInstance.get(`/roles/users/${userId}/roles`);
+    return response.data;
+  }
+
+  async assignRoleToUser(userId: string, roleId: string) {
+    const response = await this.axiosInstance.post(`/roles/users/${userId}/roles`, { roleId });
+    return response.data;
+  }
+
+  async removeRoleFromUser(userId: string, roleId: string) {
+    const response = await this.axiosInstance.delete(`/roles/users/${userId}/roles/${roleId}`);
+    return response.data;
+  }
+
+  async getUserPermissions(userId: string) {
+    const response = await this.axiosInstance.get(`/roles/users/${userId}/permissions`);
     return response.data;
   }
 }

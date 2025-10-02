@@ -172,14 +172,87 @@ export class UserModel {
     return bcrypt.compare(password, hashedPassword);
   }
 
-  static async getAll(): Promise<User[]> {
+  static async findAll(): Promise<User[]> {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM users WHERE isActive = 1 ORDER BY createdAt DESC';
+      const query = 'SELECT * FROM users ORDER BY createdAt DESC';
       database.getDb().all(query, [], (err, rows: any[]) => {
         if (err) {
           reject(err);
         } else {
           resolve(rows.map(row => this.mapRowToUser(row)));
+        }
+      });
+    });
+  }
+
+  static async update(id: string, updates: Partial<User>): Promise<User> {
+    const fields = [];
+    const values = [];
+    const now = new Date().toISOString();
+
+    if (updates.username) {
+      fields.push('username = ?');
+      values.push(updates.username);
+    }
+    if (updates.email) {
+      fields.push('email = ?');
+      values.push(updates.email);
+    }
+    if (updates.firstName) {
+      fields.push('firstName = ?');
+      values.push(updates.firstName);
+    }
+    if (updates.lastName) {
+      fields.push('lastName = ?');
+      values.push(updates.lastName);
+    }
+    if (updates.role) {
+      fields.push('role = ?');
+      values.push(updates.role);
+    }
+    if (updates.isActive !== undefined) {
+      fields.push('isActive = ?');
+      values.push(updates.isActive ? 1 : 0);
+    }
+
+    if (fields.length === 0) {
+      throw new Error('No fields to update');
+    }
+
+    fields.push('updatedAt = ?');
+    values.push(now, id);
+
+    return new Promise((resolve, reject) => {
+      const query = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+
+      database.getDb().run(query, values, async (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          try {
+            const updatedUser = await this.findById(id);
+            if (!updatedUser) {
+              reject(new Error('User not found after update'));
+            } else {
+              resolve(updatedUser);
+            }
+          } catch (error) {
+            reject(error);
+          }
+        }
+      });
+    });
+  }
+
+  static async delete(id: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const query = 'DELETE FROM users WHERE id = ?';
+
+      database.getDb().run(query, [id], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
         }
       });
     });

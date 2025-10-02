@@ -1,5 +1,6 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
+import fs from 'fs';
 
 sqlite3.verbose();
 
@@ -10,6 +11,12 @@ export class Database {
   private db: sqlite3.Database;
 
   private constructor() {
+    // Ensure data directory exists
+    const dataDir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
     this.db = new sqlite3.Database(DB_PATH, (err) => {
       if (err) {
         console.error('Error opening database:', err.message);
@@ -127,24 +134,91 @@ export class Database {
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL,
         updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS roles (
+        id TEXT PRIMARY KEY,
+        name TEXT UNIQUE NOT NULL,
+        description TEXT,
+        isSystem BOOLEAN NOT NULL DEFAULT 0,
+        permissions TEXT NOT NULL DEFAULT '[]',
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS user_roles (
+        id TEXT PRIMARY KEY,
+        userId TEXT NOT NULL,
+        roleId TEXT NOT NULL,
+        assignedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (roleId) REFERENCES roles (id) ON DELETE CASCADE,
+        UNIQUE(userId, roleId)
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS teams (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        leaderId TEXT NULL,
+        isActive BOOLEAN NOT NULL DEFAULT 1,
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (leaderId) REFERENCES users (id)
+      )`,
+
+      `CREATE TABLE IF NOT EXISTS team_members (
+        id TEXT PRIMARY KEY,
+        teamId TEXT NOT NULL,
+        userId TEXT NOT NULL,
+        joinedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (teamId) REFERENCES teams (id) ON DELETE CASCADE,
+        FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE,
+        UNIQUE(teamId, userId)
       )`
     ];
 
-    tables.forEach((table) => {
-      this.db.run(table, (err) => {
+    // Use serialize to ensure tables are created in order before other operations
+    this.db.serialize(() => {
+      tables.forEach((table) => {
+        this.db.run(table, (err) => {
+          if (err) {
+            console.error('Error creating table:', err.message);
+          }
+        });
+      });
+
+      this.db.run(`INSERT OR IGNORE INTO app_settings (key, value) VALUES ('setup_completed', 'false')`, (err) => {
         if (err) {
-          console.error('Error creating table:', err.message);
+          console.error('Error inserting setup status:', err.message);
         }
       });
-    });
 
-    this.db.run(`INSERT OR IGNORE INTO app_settings (key, value) VALUES ('setup_completed', 'false')`, (err) => {
-      if (err) {
-        console.error('Error inserting setup status:', err.message);
-      }
-    });
+      // Initialize default roles after tables are created
+      this.initializeDefaultRoles();
 
-    console.log('✅ Database tables created successfully');
+      console.log('✅ Database tables created successfully');
+    });
+  }
+
+  private initializeDefaultRoles(): void {
+    const { v4: uuidv4 } = require('uuid');
+    const { DEFAULT_ROLES } = require('./permissions');
+
+    Object.entries(DEFAULT_ROLES).forEach(([key, role]: [string, any]) => {
+      const id = uuidv4();
+      const permissionsJson = JSON.stringify(role.permissions);
+
+      this.db.run(
+        `INSERT OR IGNORE INTO roles (id, name, description, isSystem, permissions) VALUES (?, ?, ?, ?, ?)`,
+        [id, role.name, role.description, role.isSystem ? 1 : 0, permissionsJson],
+        (err) => {
+          if (err && !err.message.includes('UNIQUE constraint')) {
+            console.error(`Error creating role ${role.name}:`, err.message);
+          }
+        }
+      );
+    });
   }
 
   private runMigrations(): void {

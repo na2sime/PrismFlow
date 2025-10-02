@@ -1,0 +1,578 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Users as UsersIcon,
+  Plus,
+  Edit2,
+  Trash2,
+  Power,
+  Shield,
+  User,
+  X,
+  Save,
+  Mail,
+  Check
+} from 'lucide-react';
+import { apiService } from '../../services/api';
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'admin' | 'user';
+  isActive: boolean;
+  createdAt: string;
+}
+
+interface UserFormData {
+  username: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: 'admin' | 'user';
+  isActive: boolean;
+}
+
+interface Role {
+  id: string;
+  name: string;
+  description: string | null;
+  isSystem: boolean;
+  permissions: string[];
+}
+
+const Users: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [showRolesModal, setShowRolesModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [selectedUserForRoles, setSelectedUserForRoles] = useState<User | null>(null);
+  const [userRoles, setUserRoles] = useState<Role[]>([]);
+  const [error, setError] = useState('');
+
+  const [formData, setFormData] = useState<UserFormData>({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    role: 'user',
+    isActive: true
+  });
+
+  useEffect(() => {
+    loadUsers();
+    loadRoles();
+  }, []);
+
+  const loadUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await apiService.getUsers();
+      if (response.success) {
+        setUsers(response.data.users);
+      }
+    } catch (err) {
+      console.error('Error loading users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRoles = async () => {
+    try {
+      const response = await apiService.getRoles();
+      if (response.success) {
+        setRoles(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading roles:', err);
+    }
+  };
+
+  const handleCreate = () => {
+    setEditingUser(null);
+    setFormData({
+      username: '',
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      role: 'user',
+      isActive: true
+    });
+    setShowModal(true);
+    setError('');
+  };
+
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    setFormData({
+      username: user.username,
+      email: user.email,
+      password: '',
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      isActive: user.isActive
+    });
+    setShowModal(true);
+    setError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      if (editingUser) {
+        const response = await apiService.updateUser(editingUser.id, {
+          username: formData.username,
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          role: formData.role,
+          isActive: formData.isActive
+        });
+
+        if (response.success) {
+          await loadUsers();
+          setShowModal(false);
+        }
+      } else {
+        const response = await apiService.createUser(formData);
+
+        if (response.success) {
+          await loadUsers();
+          setShowModal(false);
+        }
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Une erreur est survenue');
+    }
+  };
+
+  const handleDelete = async (userId: string) => {
+    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      return;
+    }
+
+    try {
+      const response = await apiService.deleteUser(userId);
+      if (response.success) {
+        await loadUsers();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Erreur lors de la suppression');
+    }
+  };
+
+  const handleToggleStatus = async (userId: string) => {
+    try {
+      const response = await apiService.toggleUserStatus(userId);
+      if (response.success) {
+        await loadUsers();
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Erreur lors du changement de statut');
+    }
+  };
+
+  const handleManageRoles = async (user: User) => {
+    setSelectedUserForRoles(user);
+    try {
+      const response = await apiService.getUserRoles(user.id);
+      if (response.success) {
+        setUserRoles(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading user roles:', err);
+    }
+    setShowRolesModal(true);
+  };
+
+  const handleToggleRole = async (roleId: string) => {
+    if (!selectedUserForRoles) return;
+
+    const hasRole = userRoles.some(r => r.id === roleId);
+
+    try {
+      if (hasRole) {
+        await apiService.removeRoleFromUser(selectedUserForRoles.id, roleId);
+        setUserRoles(userRoles.filter(r => r.id !== roleId));
+      } else {
+        await apiService.assignRoleToUser(selectedUserForRoles.id, roleId);
+        const role = roles.find(r => r.id === roleId);
+        if (role) {
+          setUserRoles([...userRoles, role]);
+        }
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Erreur lors de la modification des rôles');
+    }
+  };
+
+  return (
+    <div className="p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Gestion des utilisateurs</h1>
+            <p className="text-slate-600">Gérez les membres de votre équipe</p>
+          </div>
+          <button
+            onClick={handleCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Nouvel utilisateur
+          </button>
+        </div>
+
+        {/* Users Table */}
+        <div className="glass rounded-2xl overflow-hidden">
+          {loading ? (
+            <div className="p-12 text-center">
+              <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-slate-600">Chargement...</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Utilisateur</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Email</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Rôle</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Statut</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Date de création</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-900">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {users.map((user) => (
+                    <motion.tr
+                      key={user.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="hover:bg-slate-50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                            {user.firstName[0]}{user.lastName[0]}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">{user.firstName} {user.lastName}</p>
+                            <p className="text-sm text-slate-500">@{user.username}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2 text-slate-600">
+                          <Mail className="w-4 h-4" />
+                          {user.email}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
+                          user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'
+                        }`}>
+                          {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                          {user.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
+                          user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {user.isActive ? 'Actif' : 'Inactif'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {new Date(user.createdAt).toLocaleDateString('fr-FR')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleManageRoles(user)}
+                            className="p-2 hover:bg-purple-50 text-purple-600 rounded-lg transition-colors"
+                            title="Gérer les rôles"
+                          >
+                            <Shield className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleToggleStatus(user.id)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              user.isActive ? 'hover:bg-red-50 text-red-600' : 'hover:bg-green-50 text-green-600'
+                            }`}
+                            title={user.isActive ? 'Désactiver' : 'Activer'}
+                          >
+                            <Power className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors"
+                            title="Modifier"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Modal */}
+        <AnimatePresence>
+          {showModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+              onClick={() => setShowModal(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-slate-900">
+                    {editingUser ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur'}
+                  </h2>
+                  <button
+                    onClick={() => setShowModal(false)}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {error && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Prénom</label>
+                      <input
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Nom</label>
+                      <input
+                        type="text"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Nom d'utilisateur</label>
+                    <input
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+
+                  {!editingUser && (
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Mot de passe</label>
+                      <input
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required={!editingUser}
+                      />
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Rôle</label>
+                      <select
+                        value={formData.role}
+                        onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'user' })}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="user">Utilisateur</option>
+                        <option value="admin">Administrateur</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Statut</label>
+                      <select
+                        value={formData.isActive ? 'active' : 'inactive'}
+                        onChange={(e) => setFormData({ ...formData, isActive: e.target.value === 'active' })}
+                        className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Save className="w-4 h-4" />
+                      {editingUser ? 'Mettre à jour' : 'Créer'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Roles Management Modal */}
+        <AnimatePresence>
+          {showRolesModal && selectedUserForRoles && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+              onClick={() => setShowRolesModal(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900">Gérer les rôles</h2>
+                    <p className="text-sm text-slate-600 mt-1">
+                      {selectedUserForRoles.firstName} {selectedUserForRoles.lastName} (@{selectedUserForRoles.username})
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowRolesModal(false)}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {roles.map((role) => {
+                    const isAssigned = userRoles.some(r => r.id === role.id);
+                    return (
+                      <div
+                        key={role.id}
+                        onClick={() => handleToggleRole(role.id)}
+                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                          isAssigned
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-slate-200 hover:border-purple-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                              isAssigned
+                                ? 'border-purple-600 bg-purple-600'
+                                : 'border-slate-300'
+                            }`}>
+                              {isAssigned && <Check className="w-4 h-4 text-white" />}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className="font-semibold text-slate-900">{role.name}</p>
+                                {role.isSystem && (
+                                  <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded">
+                                    Système
+                                  </span>
+                                )}
+                              </div>
+                              {role.description && (
+                                <p className="text-sm text-slate-600 mt-1">{role.description}</p>
+                              )}
+                              <p className="text-xs text-slate-500 mt-1">
+                                {role.permissions.length} permission{role.permissions.length > 1 ? 's' : ''}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <button
+                    onClick={() => setShowRolesModal(false)}
+                    className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                  >
+                    Terminé
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+export default Users;

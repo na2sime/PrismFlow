@@ -10,6 +10,8 @@ import { conditionalSetupCheck } from './middleware/setup';
 import setupRoutes from './routes/setup';
 import authRoutes from './routes/auth';
 import twoFactorRoutes from './routes/twoFactor';
+import userRoutes from './routes/users';
+import roleRoutes from './routes/roles';
 import projectRoutes from './routes/projects';
 import taskRoutes from './routes/tasks';
 import boardRoutes from './routes/boards';
@@ -43,6 +45,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/2fa', twoFactorRoutes);
 
 // Protected API routes (require setup to be completed)
+app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/boards', boardRoutes);

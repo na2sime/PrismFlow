@@ -2,9 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SetupProvider, useSetup } from './contexts/SetupContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import MainLayout from './components/Layout/MainLayout';
 import Setup from './pages/Setup/Setup';
 import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Users from './pages/Admin/Users';
+import Roles from './pages/Admin/Roles';
 
 const AppRoutes: React.FC = () => {
   const { setupStatus, loading } = useSetup();
@@ -35,14 +38,24 @@ const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route
-        path="/dashboard"
+        path="/*"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <MainLayout>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/projects" element={<div className="p-8"><h1 className="text-2xl font-bold">Projets</h1></div>} />
+                <Route path="/tasks" element={<div className="p-8"><h1 className="text-2xl font-bold">Tâches</h1></div>} />
+                <Route path="/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Équipe</h1></div>} />
+                <Route path="/admin/users" element={<Users />} />
+                <Route path="/admin/roles" element={<Roles />} />
+                <Route path="/settings" element={<div className="p-8"><h1 className="text-2xl font-bold">Paramètres</h1></div>} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </MainLayout>
           </ProtectedRoute>
         }
       />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };

@@ -123,7 +123,7 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

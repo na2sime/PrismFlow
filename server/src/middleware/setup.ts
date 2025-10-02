@@ -26,8 +26,9 @@ export const requireSetupMode = async (req: Request, res: Response, next: NextFu
 
 export const conditionalSetupCheck = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    // Skip setup check for setup routes, health check, and static files
+    // Skip setup check for setup routes, auth routes, health check, and static files
     if (req.path.startsWith('/api/setup') ||
+        req.path.startsWith('/api/auth') ||
         req.path === '/api/health' ||
         !req.path.startsWith('/api/')) {
       next();
