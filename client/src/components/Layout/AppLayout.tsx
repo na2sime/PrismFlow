@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import DockTailwind from '../Dock/DockTailwind';
+import Dock from '../Dock/Dock';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -25,7 +25,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       </motion.main>
 
       {/* macOS-style Dock */}
-      <DockTailwind />
+      <Dock />
 
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">

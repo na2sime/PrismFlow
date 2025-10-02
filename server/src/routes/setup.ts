@@ -1,15 +1,11 @@
 import { Router } from 'express';
 import { SetupController } from '@/controllers/SetupController';
 import { requireSetupMode } from '@/middleware/setup';
-import { authLimiter } from '@/middleware/auth';
 
 const router = Router();
 
 // Apply setup mode requirement to all setup routes
 router.use(requireSetupMode);
-
-// Apply rate limiting to setup routes
-router.use(authLimiter);
 
 // Get setup status
 router.get('/status', SetupController.getSetupStatus);
