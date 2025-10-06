@@ -5,7 +5,7 @@ export interface User {
   password: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'user' | 'viewer';
+  role: string; // Dynamic role name (can be custom role)
   isActive: boolean;
   twoFactorSecret: string | null;
   twoFactorEnabled: boolean;
