@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Building2, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { User, Building2, CheckCircle, ArrowRight, ArrowLeft, Languages } from 'lucide-react';
 
 interface AdminUserData {
   username: string;
@@ -20,8 +20,8 @@ interface ProjectData {
 }
 
 const Setup: React.FC = () => {
-  const { t } = useTranslation();
-  const [currentStep, setCurrentStep] = useState(1);
+  const { t, i18n } = useTranslation();
+  const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [adminUserId, setAdminUserId] = useState('');
@@ -185,7 +185,8 @@ const Setup: React.FC = () => {
           <p className="text-lg text-slate-600">{t('setup.subtitle')}</p>
         </motion.div>
 
-        {/* Progress Steps */}
+        {/* Progress Steps - Only show when not on language selection (step 0) */}
+        {currentStep > 0 && (
         <div className="flex items-center justify-between mb-12 relative">
           {steps.map((step, index) => (
             <React.Fragment key={step.id}>
@@ -220,6 +221,7 @@ const Setup: React.FC = () => {
             </React.Fragment>
           ))}
         </div>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -235,6 +237,44 @@ const Setup: React.FC = () => {
         {/* Step Forms */}
         <div className="glass rounded-2xl p-8 shadow-xl">
           <AnimatePresence mode="wait">
+            {currentStep === 0 && (
+              <motion.div
+                key="step0"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="text-center py-8"
+              >
+                <Languages className="w-20 h-20 text-blue-500 mx-auto mb-6" />
+                <h2 className="text-3xl font-bold text-slate-900 mb-3">Choose your language</h2>
+                <p className="text-slate-600 mb-8">Select your preferred language for the setup</p>
+
+                <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                  <button
+                    onClick={() => {
+                      i18n.changeLanguage('fr');
+                      setCurrentStep(1);
+                    }}
+                    className="p-6 rounded-lg border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+                  >
+                    <div className="text-4xl mb-2">🇫🇷</div>
+                    <div className="font-semibold text-slate-900">Français</div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      i18n.changeLanguage('en');
+                      setCurrentStep(1);
+                    }}
+                    className="p-6 rounded-lg border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+                  >
+                    <div className="text-4xl mb-2">🇬🇧</div>
+                    <div className="font-semibold text-slate-900">English</div>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             {currentStep === 1 && (
               <motion.form
                 key="step1"

@@ -16,6 +16,7 @@ import {
 import { apiService } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Languages } from 'lucide-react';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -24,10 +25,15 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'fr' ? 'en' : 'fr';
+    i18n.changeLanguage(newLang);
+  };
 
   const handleLogout = async () => {
     try {
@@ -225,11 +231,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 }`}
               >
                 <button
+                  onClick={toggleLanguage}
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
+                >
+                  <Languages className="w-4 h-4 text-slate-600" />
+                  <span className="text-sm font-medium text-slate-700">
+                    {i18n.language === 'fr' ? '🇬🇧 English' : '🇫🇷 Français'}
+                  </span>
+                </button>
+                <button
                   onClick={() => {
                     setShowUserMenu(false);
                     navigate('/settings');
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left border-t border-slate-200"
                 >
                   <Settings className="w-4 h-4 text-slate-600" />
                   <span className="text-sm font-medium text-slate-700">{t('sidebar.settings')}</span>

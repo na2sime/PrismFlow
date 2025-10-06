@@ -114,8 +114,8 @@ export class RoleModel {
           return;
         }
 
-        if (existingRole.isSystem) {
-          reject(new Error('Cannot modify system roles'));
+        if (existingRole.name === 'Administrator') {
+          reject(new Error('Cannot modify Administrator role'));
           return;
         }
 
@@ -172,8 +172,8 @@ export class RoleModel {
           return;
         }
 
-        if (role.isSystem) {
-          reject(new Error('Cannot delete system roles'));
+        if (role.name === 'Administrator') {
+          reject(new Error('Cannot delete Administrator role'));
           return;
         }
 
