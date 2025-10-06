@@ -300,13 +300,13 @@ const Roles: React.FC = () => {
                 <td className="px-6 py-4 text-right space-x-2">
                   <button
                     onClick={() => handleOpenModal(role)}
-                    disabled={role.isSystem}
+                    disabled={role.name === 'Administrator'}
                     className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${
-                      role.isSystem
+                      role.name === 'Administrator'
                         ? 'text-slate-400 cursor-not-allowed'
                         : 'text-blue-600 hover:bg-blue-50'
                     }`}
-                    title={role.isSystem ? t('roles.systemRoleEditDisabled') : t('common.edit')}
+                    title={role.name === 'Administrator' ? t('roles.systemRoleEditDisabled') : t('common.edit')}
                   >
                     <Edit className="w-4 h-4" />
                   </button>
@@ -329,13 +329,13 @@ const Roles: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => setDeleteConfirm(role.id)}
-                      disabled={role.isSystem}
+                      disabled={role.name === 'Administrator'}
                       className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${
-                        role.isSystem
+                        role.name === 'Administrator'
                           ? 'text-slate-400 cursor-not-allowed'
                           : 'text-red-600 hover:bg-red-50'
                       }`}
-                      title={role.isSystem ? t('roles.systemRoleDeleteDisabled') : t('common.delete')}
+                      title={role.name === 'Administrator' ? t('roles.systemRoleDeleteDisabled') : t('common.delete')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

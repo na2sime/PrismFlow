@@ -70,7 +70,7 @@ export class AuthService {
     }
 
     const adminCount = await UserModel.countAdmins();
-    const role = adminCount === 0 ? 'Super Admin' : 'Team Member';
+    const role = adminCount === 0 ? 'Administrator' : 'Team Member';
 
     const newUser = await UserModel.create({
       username: registerData.username,

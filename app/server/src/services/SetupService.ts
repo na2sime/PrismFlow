@@ -48,7 +48,7 @@ export class SetupService {
             password: userData.password,
             firstName: userData.firstName,
             lastName: userData.lastName,
-            role: 'Super Admin',
+            role: 'Administrator',
             isActive: true,
             twoFactorSecret: null,
             twoFactorEnabled: false
