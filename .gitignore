@@ -7,3 +7,4 @@ app/client/build
 
 app/server/node_modules
 app/server/dist
+app/server/data
