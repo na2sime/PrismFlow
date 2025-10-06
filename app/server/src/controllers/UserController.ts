@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import { UserModel } from '@/models/User';
 import Joi from 'joi';
+import { generatePassword } from '@/utils/passwordGenerator';
+import { emailService } from '@/services/EmailService';
 
 const createUserSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
+  password: Joi.string().min(6).optional(),
   firstName: Joi.string().min(1).max(50).required(),
   lastName: Joi.string().min(1).max(50).required(),
-  role: Joi.string().valid('admin', 'user').default('user'),
+  role: Joi.string().min(1).required(),
   isActive: Joi.boolean().default(true)
 });
 
@@ -17,7 +19,7 @@ const updateUserSchema = Joi.object({
   email: Joi.string().email(),
   firstName: Joi.string().min(1).max(50),
   lastName: Joi.string().min(1).max(50),
-  role: Joi.string().valid('admin', 'user'),
+  role: Joi.string().min(1),
   isActive: Joi.boolean()
 });
 
@@ -85,7 +87,7 @@ export class UserController {
         return;
       }
 
-      const { username, email } = req.body;
+      const { username, email, firstName } = req.body;
 
       // Check if user already exists
       const existingUserByEmail = await UserModel.findByEmail(email);
@@ -106,11 +108,26 @@ export class UserController {
         return;
       }
 
+      // Generate password if not provided
+      const generatedPassword = req.body.password || generatePassword(12);
+      const isPasswordGenerated = !req.body.password;
+
       const newUser = await UserModel.create({
         ...req.body,
+        password: generatedPassword,
         twoFactorSecret: null,
         twoFactorEnabled: false
       });
+
+      // Send email with credentials if password was auto-generated
+      if (isPasswordGenerated) {
+        await emailService.sendNewUserCredentials(
+          email,
+          username,
+          generatedPassword,
+          firstName
+        );
+      }
 
       const { password, twoFactorSecret, ...safeUser } = newUser;
 
