@@ -11,8 +11,8 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction): v
     return;
   }
 
-  // Accept 'Super Admin', 'Administrateur', or 'admin' roles
-  const adminRoles = ['Super Admin', 'Administrateur', 'admin'];
+  // Accept 'Super Admin', 'Administrator', or 'admin' roles
+  const adminRoles = ['Super Admin', 'Administrator', 'admin'];
   if (!adminRoles.includes(user.role)) {
     res.status(403).json({
       success: false,

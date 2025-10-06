@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     }
   ];
 
-  const isAdmin = ['Super Admin', 'Administrateur', 'admin'].includes(user.role);
+  const isAdmin = ['Super Admin', 'Administrator', 'admin'].includes(user.role);
 
   const handleAdminToggle = () => {
     setIsAdminMode(!isAdminMode);

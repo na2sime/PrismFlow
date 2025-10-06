@@ -260,7 +260,7 @@ export class UserModel {
 
   static async countAdmins(): Promise<number> {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT COUNT(*) as count FROM users WHERE role = "admin" AND isActive = 1';
+      const query = 'SELECT COUNT(*) as count FROM users WHERE (role = "Super Admin" OR role = "Administrator" OR role = "admin") AND isActive = 1';
       database.getDb().get(query, [], (err, row: any) => {
         if (err) {
           reject(err);

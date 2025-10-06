@@ -142,7 +142,7 @@ export const requireRole = (roles: string[]) => {
   };
 };
 
-export const requireAdmin = requireRole(['Super Admin', 'Administrateur', 'admin']);
+export const requireAdmin = requireRole(['Super Admin', 'Administrator', 'admin']);
 
 export const requireProjectAccess = (accessType: 'read' | 'write' | 'admin' = 'read') => {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {

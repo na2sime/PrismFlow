@@ -53,13 +53,13 @@ export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS];
 export const DEFAULT_ROLES = {
   SUPER_ADMIN: {
     name: 'Super Admin',
-    description: 'Accès complet à toutes les fonctionnalités',
+    description: 'Full access to all features',
     isSystem: true,
     permissions: Object.values(PERMISSIONS),
   },
   ADMIN: {
-    name: 'Administrateur',
-    description: 'Gestion complète des utilisateurs et projets',
+    name: 'Administrator',
+    description: 'Complete management of users and projects',
     isSystem: true,
     permissions: [
       PERMISSIONS.USERS_VIEW,
@@ -94,8 +94,8 @@ export const DEFAULT_ROLES = {
     ],
   },
   PROJECT_MANAGER: {
-    name: 'Chef de Projet',
-    description: 'Gestion de projets et tâches',
+    name: 'Project Manager',
+    description: 'Project and task management',
     isSystem: true,
     permissions: [
       PERMISSIONS.PROJECTS_VIEW_OWN,
@@ -114,8 +114,8 @@ export const DEFAULT_ROLES = {
     ],
   },
   TEAM_MEMBER: {
-    name: 'Membre d\'équipe',
-    description: 'Utilisateur standard avec accès aux projets assignés',
+    name: 'Team Member',
+    description: 'Standard user with access to assigned projects',
     isSystem: true,
     permissions: [
       PERMISSIONS.PROJECTS_VIEW_OWN,
@@ -127,8 +127,8 @@ export const DEFAULT_ROLES = {
     ],
   },
   VIEWER: {
-    name: 'Observateur',
-    description: 'Accès en lecture seule',
+    name: 'Viewer',
+    description: 'Read-only access',
     isSystem: true,
     permissions: [
       PERMISSIONS.PROJECTS_VIEW_OWN,

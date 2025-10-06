@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
-import { useSetup } from '../../contexts/SetupContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Building2, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 
@@ -23,8 +21,6 @@ interface ProjectData {
 
 const Setup: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { checkSetupStatus } = useSetup();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
