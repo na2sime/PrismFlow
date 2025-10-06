@@ -1,5 +1,9 @@
 .idea
-client/node_modules
+
 node_modules
-server/node_modules
-server/dist
+
+app/client/node_modules
+app/client/build
+
+app/server/node_modules
+app/server/dist
