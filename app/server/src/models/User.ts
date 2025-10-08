@@ -51,8 +51,8 @@ export class UserModel {
 
     return new Promise((resolve, reject) => {
       const query = `
-        INSERT INTO users (id, username, email, password, firstName, lastName, role, isActive, twoFactorSecret, twoFactorEnabled, createdAt, updatedAt)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (id, username, email, password, firstName, lastName, role, isActive, profilePicture, twoFactorSecret, twoFactorEnabled, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       database.getDb().run(query, [
@@ -64,6 +64,7 @@ export class UserModel {
         userData.lastName,
         userData.role,
         userData.isActive ? 1 : 0,
+        null,
         null,
         0,
         now,
@@ -81,6 +82,7 @@ export class UserModel {
             lastName: userData.lastName,
             role: userData.role,
             isActive: userData.isActive,
+            profilePicture: null,
             twoFactorSecret: null,
             twoFactorEnabled: false,
             lastLogin: null,
@@ -344,6 +346,21 @@ export class UserModel {
     });
   }
 
+  static async updateProfilePicture(userId: string, profilePicture: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const now = new Date().toISOString();
+      const query = 'UPDATE users SET profilePicture = ?, updatedAt = ? WHERE id = ?';
+
+      database.getDb().run(query, [profilePicture, now, userId], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   private static mapRowToUser(row: any): User {
     return {
       id: row.id,
@@ -354,6 +371,7 @@ export class UserModel {
       lastName: row.lastName,
       role: row.role,
       isActive: row.isActive === 1,
+      profilePicture: row.profilePicture || null,
       twoFactorSecret: row.twoFactorSecret || null,
       twoFactorEnabled: row.twoFactorEnabled === 1,
       lastLogin: row.lastLogin ? new Date(row.lastLogin) : null,

@@ -8,6 +8,7 @@ import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Users from './pages/Admin/Users';
 import Roles from './pages/Admin/Roles';
+import Settings from './pages/Settings/Settings';
 import { useTranslation } from 'react-i18next';
 
 const AppRoutes: React.FC = () => {
@@ -51,7 +52,7 @@ const AppRoutes: React.FC = () => {
                 <Route path="/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Équipe</h1></div>} />
                 <Route path="/admin/users" element={<Users />} />
                 <Route path="/admin/roles" element={<Roles />} />
-                <Route path="/settings" element={<div className="p-8"><h1 className="text-2xl font-bold">Paramètres</h1></div>} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </MainLayout>

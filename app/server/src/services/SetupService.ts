@@ -50,6 +50,7 @@ export class SetupService {
             lastName: userData.lastName,
             role: 'Administrator',
             isActive: true,
+            profilePicture: null,
             twoFactorSecret: null,
             twoFactorEnabled: false
         });

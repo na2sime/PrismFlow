@@ -10,6 +10,7 @@ import { conditionalSetupCheck } from '@/middleware/setup';
 import setupRoutes from '@/routes/setup';
 import authRoutes from '@/routes/auth';
 import twoFactorRoutes from '@/routes/twoFactor';
+import profileRoutes from '@/routes/profile';
 import userRoutes from '@/routes/users';
 import roleRoutes from '@/routes/roles';
 import projectRoutes from '@/routes/projects';
@@ -28,10 +29,12 @@ if (!fs.existsSync(dataDir)) {
 }
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' })); // Increased limit for profile picture uploads
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Initialize database
 database.getDb();
@@ -45,11 +48,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/2fa', twoFactorRoutes);
 
 // Protected API routes (require setup to be completed)
+app.use('/api/profile', profileRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/boards', boardRoutes);
+
+// Serve uploaded files
+app.use('/api/uploads', express.static(path.join(process.cwd(), 'data', 'uploads')));
 
 // Serve static files from client in production
 if (process.env.NODE_ENV === 'production') {

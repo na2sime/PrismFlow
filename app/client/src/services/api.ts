@@ -29,7 +29,12 @@ class ApiService {
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        if (error.response?.status === 401) {
+        const originalRequest = error.config as any;
+
+        // Avoid infinite loop by checking if this is a retry or a refresh request
+        if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/refresh')) {
+          originalRequest._retry = true;
+
           // Token expired, try to refresh
           const refreshToken = localStorage.getItem('refreshToken');
           if (refreshToken) {
@@ -39,9 +44,9 @@ class ApiService {
               localStorage.setItem('refreshToken', response.data.refreshToken);
 
               // Retry the original request
-              if (error.config) {
-                error.config.headers.Authorization = `Bearer ${response.data.accessToken}`;
-                return this.axiosInstance.request(error.config);
+              if (originalRequest) {
+                originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+                return this.axiosInstance.request(originalRequest);
               }
             } catch (refreshError) {
               // Refresh failed, logout user
@@ -49,7 +54,14 @@ class ApiService {
               localStorage.removeItem('refreshToken');
               localStorage.removeItem('user');
               window.location.href = '/login';
+              return Promise.reject(refreshError);
             }
+          } else {
+            // No refresh token, redirect to login
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
           }
         }
         return Promise.reject(error);
@@ -309,6 +321,62 @@ class ApiService {
 
   async getUserPermissions(userId: string) {
     const response = await this.axiosInstance.get(`/roles/users/${userId}/permissions`);
+    return response.data;
+  }
+
+  // Profile endpoints
+  async getProfile() {
+    const response = await this.axiosInstance.get('/profile');
+    return response.data;
+  }
+
+  async updateProfile(profileData: {
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+  }) {
+    const response = await this.axiosInstance.put('/profile', profileData);
+    return response.data;
+  }
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    const response = await this.axiosInstance.post('/profile/change-password', {
+      currentPassword,
+      newPassword,
+    });
+    return response.data;
+  }
+
+  async uploadProfilePicture(imageData: string) {
+    const response = await this.axiosInstance.post('/profile/picture', {
+      image: imageData,
+    });
+    return response.data;
+  }
+
+  async deleteProfilePicture() {
+    const response = await this.axiosInstance.delete('/profile/picture');
+    return response.data;
+  }
+
+  // 2FA endpoints
+  async setup2FA() {
+    const response = await this.axiosInstance.post('/auth/2fa/setup');
+    return response.data;
+  }
+
+  async verify2FA(token: string) {
+    const response = await this.axiosInstance.post('/auth/2fa/verify', { token });
+    return response.data;
+  }
+
+  async disable2FA(token: string) {
+    const response = await this.axiosInstance.post('/auth/2fa/disable', { token });
+    return response.data;
+  }
+
+  async get2FAStatus() {
+    const response = await this.axiosInstance.get('/auth/2fa/status');
     return response.data;
   }
 }

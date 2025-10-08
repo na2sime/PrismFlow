@@ -7,6 +7,7 @@ export interface User {
   lastName: string;
   role: string; // Dynamic role name (can be custom role)
   isActive: boolean;
+  profilePicture: string | null;
   twoFactorSecret: string | null;
   twoFactorEnabled: boolean;
   lastLogin: Date | null;

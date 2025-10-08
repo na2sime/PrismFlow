@@ -80,6 +80,7 @@ export class AuthService {
       lastName: registerData.lastName,
       role,
       isActive: true,
+      profilePicture: null,
       twoFactorSecret: null,
       twoFactorEnabled: false
     });

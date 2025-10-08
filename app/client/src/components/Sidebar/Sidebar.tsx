@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   FolderKanban,
   CheckSquare,
-  Users,
+  Users as UsersIcon,
   Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
   Shield,
   ChevronDown,
-  ArrowLeft
+  ArrowLeft,
+  User
 } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Languages } from 'lucide-react';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -26,9 +29,25 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
+
+  // Listen for localStorage changes to update user info
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUser(JSON.parse(localStorage.getItem('user') || '{}'));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    // Also listen for custom event from within the same tab
+    window.addEventListener('userUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userUpdated', handleStorageChange);
+    };
+  }, []);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'fr' ? 'en' : 'fr';
@@ -67,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     },
     {
       path: '/team',
-      icon: Users,
+      icon: UsersIcon,
       label: t('sidebar.team')
     }
   ];
@@ -75,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const adminMenuItems = [
     {
       path: '/admin/users',
-      icon: Users,
+      icon: UsersIcon,
       label: t('sidebar.users')
     },
     {
@@ -203,9 +222,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               isCollapsed ? 'justify-center' : ''
             }`}
           >
-            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-              {user.firstName?.[0]}{user.lastName?.[0]}
-            </div>
+            {user.profilePicture ? (
+              <img
+                src={`${API_BASE_URL}/${user.profilePicture}`}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                {user.firstName?.[0]}{user.lastName?.[0]}
+              </div>
+            )}
             {!isCollapsed && (
               <>
                 <div className="flex-1 min-w-0 text-left">

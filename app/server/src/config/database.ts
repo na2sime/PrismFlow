@@ -236,6 +236,7 @@ export class Database {
 
         const hasTwoFactorSecret = columns.some(col => col.name === 'twoFactorSecret');
         const hasTwoFactorEnabled = columns.some(col => col.name === 'twoFactorEnabled');
+        const hasProfilePicture = columns.some(col => col.name === 'profilePicture');
 
         if (!hasTwoFactorSecret) {
           this.db.run('ALTER TABLE users ADD COLUMN twoFactorSecret TEXT NULL', (err) => {
@@ -253,6 +254,16 @@ export class Database {
               console.error('Error adding twoFactorEnabled column:', err.message);
             } else {
               console.log('✅ Added twoFactorEnabled column to users table');
+            }
+          });
+        }
+
+        if (!hasProfilePicture) {
+          this.db.run('ALTER TABLE users ADD COLUMN profilePicture TEXT NULL', (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+              console.error('Error adding profilePicture column:', err.message);
+            } else {
+              console.log('✅ Added profilePicture column to users table');
             }
           });
         }
