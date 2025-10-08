@@ -5,10 +5,13 @@ import { motion } from 'framer-motion';
 import { LogIn, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../components/LanguageSwitcher/LanguageSwitcher';
+import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [twoFactorCode, setTwoFactorCode] = useState('');
@@ -44,111 +47,172 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
-      </div>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">{t('auth.loginTitle')}</h1>
-          <p className="text-slate-600">{t('auth.loginSubtitle')}</p>
+    <ThemeLayout>
+      <div className="min-h-screen flex items-center justify-center p-4 relative">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
         </div>
-
-        <div className="glass rounded-2xl p-8 shadow-xl">
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="text-center mb-8">
+            <h1
+              className="text-4xl font-bold mb-2"
+              style={{ color: theme.colors.textPrimary }}
             >
-              {error}
-            </motion.div>
-          )}
+              {t('auth.loginTitle')}
+            </h1>
+            <p style={{ color: theme.colors.textSecondary }}>{t('auth.loginSubtitle')}</p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {!requiresTwoFactor ? (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    {t('common.email')}
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    {t('common.password')}
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    required
-                  />
-                </div>
-              </>
-            ) : (
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  {t('auth.twoFactorCode')}
-                </label>
-                <input
-                  type="text"
-                  value={twoFactorCode}
-                  onChange={(e) => setTwoFactorCode(e.target.value)}
-                  placeholder="000000"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-center text-2xl tracking-widest"
-                  maxLength={6}
-                  required
-                />
-              </div>
+          <div
+            className="backdrop-blur-md rounded-2xl p-8 shadow-xl border"
+            style={{
+              background: theme.colors.glassBackground,
+              borderColor: theme.colors.glassBorder,
+            }}
+          >
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 rounded-lg text-sm border"
+                style={{
+                  backgroundColor: `${theme.colors.error}15`,
+                  borderColor: `${theme.colors.error}40`,
+                  color: theme.colors.error,
+                }}
+              >
+                {error}
+              </motion.div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {!requiresTwoFactor ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {t('auth.connecting')}
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: theme.colors.textSecondary }}
+                    >
+                      {t('common.email')}
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary,
+                      }}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: theme.colors.textSecondary }}
+                    >
+                      {t('common.password')}
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary,
+                      }}
+                      required
+                    />
+                  </div>
                 </>
               ) : (
-                <>
-                  <LogIn className="w-5 h-5" />
-                  {t('auth.login')}
-                </>
+                <div>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: theme.colors.textSecondary }}
+                  >
+                    {t('auth.twoFactorCode')}
+                  </label>
+                  <input
+                    type="text"
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value)}
+                    placeholder="000000"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition text-center text-2xl tracking-widest"
+                    style={{
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary,
+                    }}
+                    maxLength={6}
+                    required
+                  />
+                </div>
               )}
-            </button>
 
-            {requiresTwoFactor && (
               <button
-                type="button"
-                onClick={() => {
-                  setRequiresTwoFactor(false);
-                  setTwoFactorCode('');
+                type="submit"
+                disabled={loading}
+                className="w-full font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: theme.colors.accent,
+                  color: theme.colors.textPrimary,
                 }}
-                className="w-full text-slate-600 hover:text-slate-900 text-sm transition-colors"
+                onMouseEnter={(e) => {
+                  if (!loading) {
+                    e.currentTarget.style.backgroundColor = theme.colors.accentHover;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = theme.colors.accent;
+                }}
               >
-                {t('common.back')}
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {t('auth.connecting')}
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    {t('auth.login')}
+                  </>
+                )}
               </button>
-            )}
-          </form>
-        </div>
-      </motion.div>
-    </div>
+
+              {requiresTwoFactor && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRequiresTwoFactor(false);
+                    setTwoFactorCode('');
+                  }}
+                  className="w-full text-sm transition-colors"
+                  style={{ color: theme.colors.textSecondary }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = theme.colors.textPrimary;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = theme.colors.textSecondary;
+                  }}
+                >
+                  {t('common.back')}
+                </button>
+              )}
+            </form>
+          </div>
+        </motion.div>
+      </div>
+    </ThemeLayout>
   );
 };
 

@@ -11,15 +11,27 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true, // Enable sending cookies for CSRF
     });
 
-    // Request interceptor for adding auth token
+    // Request interceptor for adding auth token and CSRF token
     this.axiosInstance.interceptors.request.use(
       (config) => {
+        // Add JWT token
         const token = localStorage.getItem('accessToken');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Add CSRF token for non-safe methods
+        const unsafeMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
+        if (unsafeMethods.includes(config.method?.toUpperCase() || '')) {
+          const csrfToken = this.getCsrfTokenFromCookie();
+          if (csrfToken) {
+            config.headers['x-csrf-token'] = csrfToken;
+          }
+        }
+
         return config;
       },
       (error) => Promise.reject(error)
@@ -334,6 +346,7 @@ class ApiService {
     username?: string;
     firstName?: string;
     lastName?: string;
+    theme?: string;
   }) {
     const response = await this.axiosInstance.put('/profile', profileData);
     return response.data;
@@ -378,6 +391,21 @@ class ApiService {
   async get2FAStatus() {
     const response = await this.axiosInstance.get('/auth/2fa/status');
     return response.data;
+  }
+
+  // Helper method to get CSRF token from cookie
+  private getCsrfTokenFromCookie(): string | null {
+    const name = 'XSRF-TOKEN=';
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(';');
+
+    for (let i = 0; i < cookieArray.length; i++) {
+      let cookie = cookieArray[i].trim();
+      if (cookie.indexOf(name) === 0) {
+        return cookie.substring(name.length, cookie.length);
+      }
+    }
+    return null;
   }
 }
 

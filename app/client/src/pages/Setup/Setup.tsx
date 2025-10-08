@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Building2, CheckCircle, ArrowRight, ArrowLeft, Languages } from 'lucide-react';
+import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface AdminUserData {
   username: string;
@@ -21,6 +23,7 @@ interface ProjectData {
 
 const Setup: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { theme } = useTheme();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -172,18 +175,19 @@ const Setup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">
-            {t('setup.welcome')}
-          </h1>
-          <p className="text-lg text-slate-600">{t('setup.subtitle')}</p>
-        </motion.div>
+    <ThemeLayout>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-4xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>
+              {t('setup.welcome')}
+            </h1>
+            <p className="text-lg" style={{ color: theme.colors.textSecondary }}>{t('setup.subtitle')}</p>
+          </motion.div>
 
         {/* Progress Steps - Only show when not on language selection (step 0) */}
         {currentStep > 0 && (
@@ -192,29 +196,34 @@ const Setup: React.FC = () => {
             <React.Fragment key={step.id}>
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <div
-                  className={`w-16 h-16 rounded-full flex items-center justify-center mb-3 transition-all duration-300 ${
-                    currentStep >= step.id
-                      ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/50'
-                      : 'bg-white text-slate-400 border-2 border-slate-200'
-                  }`}
+                  className="w-16 h-16 rounded-full flex items-center justify-center mb-3 transition-all duration-300"
+                  style={{
+                    backgroundColor: currentStep >= step.id ? theme.colors.accent : theme.colors.surface,
+                    color: currentStep >= step.id ? '#FFFFFF' : theme.colors.textTertiary,
+                    border: currentStep >= step.id ? 'none' : `2px solid ${theme.colors.surfaceBorder}`,
+                    boxShadow: currentStep >= step.id ? `0 10px 25px ${theme.colors.accent}50` : 'none'
+                  }}
                 >
                   {step.icon}
                 </div>
                 <h3
-                  className={`text-sm font-semibold transition-colors ${
-                    currentStep >= step.id ? 'text-slate-900' : 'text-slate-400'
-                  }`}
+                  className="text-sm font-semibold transition-colors"
+                  style={{
+                    color: currentStep >= step.id ? theme.colors.textPrimary : theme.colors.textTertiary
+                  }}
                 >
                   {step.title}
                 </h3>
-                <p className="text-xs text-slate-500 text-center mt-1">{step.description}</p>
+                <p className="text-xs text-center mt-1" style={{ color: theme.colors.textSecondary }}>{step.description}</p>
               </div>
               {index < steps.length - 1 && (
-                <div className="flex-1 h-0.5 bg-slate-200 relative -mt-16">
+                <div className="flex-1 h-0.5 relative -mt-16" style={{ backgroundColor: theme.colors.surfaceBorder }}>
                   <div
-                    className={`absolute inset-0 bg-blue-500 transition-all duration-500 ${
-                      currentStep > step.id ? 'w-full' : 'w-0'
-                    }`}
+                    className="absolute inset-0 transition-all duration-500"
+                    style={{
+                      backgroundColor: theme.colors.accent,
+                      width: currentStep > step.id ? '100%' : '0'
+                    }}
                   />
                 </div>
               )}
@@ -228,14 +237,25 @@ const Setup: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"
+            className="mb-6 p-4 rounded-lg text-sm"
+            style={{
+              backgroundColor: `${theme.colors.error}15`,
+              border: `1px solid ${theme.colors.error}40`,
+              color: theme.colors.error
+            }}
           >
             {error}
           </motion.div>
         )}
 
         {/* Step Forms */}
-        <div className="glass rounded-2xl p-8 shadow-xl">
+        <div
+          className="backdrop-blur-md rounded-2xl p-8 shadow-xl border"
+          style={{
+            background: theme.colors.glassBackground,
+            borderColor: theme.colors.glassBorder
+          }}
+        >
           <AnimatePresence mode="wait">
             {currentStep === 0 && (
               <motion.div
@@ -245,9 +265,9 @@ const Setup: React.FC = () => {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="text-center py-8"
               >
-                <Languages className="w-20 h-20 text-blue-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold text-slate-900 mb-3">Choose your language</h2>
-                <p className="text-slate-600 mb-8">Select your preferred language for the setup</p>
+                <Languages className="w-20 h-20 mx-auto mb-6" style={{ color: theme.colors.accent }} />
+                <h2 className="text-3xl font-bold mb-3" style={{ color: theme.colors.textPrimary }}>Choose your language</h2>
+                <p className="mb-8" style={{ color: theme.colors.textSecondary }}>Select your preferred language for the setup</p>
 
                 <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                   <button
@@ -255,10 +275,22 @@ const Setup: React.FC = () => {
                       i18n.changeLanguage('fr');
                       setCurrentStep(1);
                     }}
-                    className="p-6 rounded-lg border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+                    className="p-6 rounded-lg border-2 transition-all text-center"
+                    style={{
+                      borderColor: theme.colors.surfaceBorder,
+                      backgroundColor: theme.colors.surface
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = theme.colors.accent;
+                      e.currentTarget.style.backgroundColor = `${theme.colors.accent}15`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = theme.colors.surfaceBorder;
+                      e.currentTarget.style.backgroundColor = theme.colors.surface;
+                    }}
                   >
                     <div className="text-4xl mb-2">🇫🇷</div>
-                    <div className="font-semibold text-slate-900">Français</div>
+                    <div className="font-semibold" style={{ color: theme.colors.textPrimary }}>Français</div>
                   </button>
 
                   <button
@@ -266,10 +298,22 @@ const Setup: React.FC = () => {
                       i18n.changeLanguage('en');
                       setCurrentStep(1);
                     }}
-                    className="p-6 rounded-lg border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 transition-all text-center"
+                    className="p-6 rounded-lg border-2 transition-all text-center"
+                    style={{
+                      borderColor: theme.colors.surfaceBorder,
+                      backgroundColor: theme.colors.surface
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = theme.colors.accent;
+                      e.currentTarget.style.backgroundColor = `${theme.colors.accent}15`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = theme.colors.surfaceBorder;
+                      e.currentTarget.style.backgroundColor = theme.colors.surface;
+                    }}
                   >
                     <div className="text-4xl mb-2">🇬🇧</div>
-                    <div className="font-semibold text-slate-900">English</div>
+                    <div className="font-semibold" style={{ color: theme.colors.textPrimary }}>English</div>
                   </button>
                 </div>
               </motion.div>
@@ -286,70 +330,95 @@ const Setup: React.FC = () => {
               >
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('common.firstName')}
                     </label>
                     <input
                       type="text"
                       value={adminData.firstName}
                       onChange={(e) => setAdminData({ ...adminData, firstName: e.target.value })}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary
+                      }}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('common.lastName')}
                     </label>
                     <input
                       type="text"
                       value={adminData.lastName}
                       onChange={(e) => setAdminData({ ...adminData, lastName: e.target.value })}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary
+                      }}
                       required
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                     {t('common.username')}
                   </label>
                   <input
                     type="text"
                     value={adminData.username}
                     onChange={(e) => setAdminData({ ...adminData, username: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                    style={{
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary
+                    }}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">{t('common.email')}</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>{t('common.email')}</label>
                   <input
                     type="email"
                     value={adminData.email}
                     onChange={(e) => setAdminData({ ...adminData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                    style={{
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary
+                    }}
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('common.password')}
                     </label>
                     <input
                       type="password"
                       value={adminData.password}
                       onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary
+                      }}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('setup.step1.confirmPassword')}
                     </label>
                     <input
@@ -358,7 +427,12 @@ const Setup: React.FC = () => {
                       onChange={(e) =>
                         setAdminData({ ...adminData, confirmPassword: e.target.value })
                       }
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                      style={{
+                        backgroundColor: theme.colors.surface,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary
+                      }}
                       required
                     />
                   </div>
@@ -367,7 +441,19 @@ const Setup: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: theme.colors.accent,
+                    color: '#FFFFFF'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.backgroundColor = theme.colors.accentHover;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = theme.colors.accent;
+                  }}
                 >
                   {loading ? t('common.creating') : t('common.continue')}
                   <ArrowRight className="w-5 h-5" />
@@ -385,7 +471,7 @@ const Setup: React.FC = () => {
                 className="space-y-6"
               >
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                     {t('setup.step2.projectName')}
                   </label>
                   <input
@@ -393,13 +479,18 @@ const Setup: React.FC = () => {
                     value={projectData.name}
                     onChange={(e) => setProjectData({ ...projectData, name: e.target.value })}
                     placeholder={t('setup.step2.projectNamePlaceholder')}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition"
+                    style={{
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary
+                    }}
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                     {t('common.description')} ({t('common.optional')})
                   </label>
                   <textarea
@@ -407,12 +498,17 @@ const Setup: React.FC = () => {
                     onChange={(e) => setProjectData({ ...projectData, description: e.target.value })}
                     placeholder={t('setup.step2.descriptionPlaceholder')}
                     rows={3}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition resize-none"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent transition resize-none"
+                    style={{
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary
+                    }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                  <label className="block text-sm font-medium mb-3" style={{ color: theme.colors.textSecondary }}>
                     {t('setup.step2.chooseTemplate')}
                   </label>
                   <div className="grid gap-4">
@@ -420,14 +516,14 @@ const Setup: React.FC = () => {
                       <div
                         key={template.id}
                         onClick={() => setProjectData({ ...projectData, templateId: template.id })}
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          projectData.templateId === template.id
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-slate-200 hover:border-slate-300'
-                        }`}
+                        className="p-4 rounded-lg border-2 cursor-pointer transition-all"
+                        style={{
+                          borderColor: projectData.templateId === template.id ? theme.colors.accent : theme.colors.surfaceBorder,
+                          backgroundColor: projectData.templateId === template.id ? `${theme.colors.accent}15` : theme.colors.surface
+                        }}
                       >
-                        <h4 className="font-semibold text-slate-900 mb-1">{template.name}</h4>
-                        <p className="text-sm text-slate-600 mb-3">{template.description}</p>
+                        <h4 className="font-semibold mb-1" style={{ color: theme.colors.textPrimary }}>{template.name}</h4>
+                        <p className="text-sm mb-3" style={{ color: theme.colors.textSecondary }}>{template.description}</p>
                         {template.columns && (
                           <div className="flex gap-2 flex-wrap">
                             {template.columns.map((col: any, idx: number) => (
@@ -451,7 +547,20 @@ const Setup: React.FC = () => {
                     type="button"
                     onClick={() => setCurrentStep(1)}
                     disabled={loading}
-                    className="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-6 rounded-lg border-2 border-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 font-semibold py-3 px-6 rounded-lg border-2 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = theme.colors.surface;
+                    }}
                   >
                     <ArrowLeft className="w-5 h-5" />
                     {t('common.back')}
@@ -459,7 +568,19 @@ const Setup: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      backgroundColor: theme.colors.accent,
+                      color: '#FFFFFF'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!loading) {
+                        e.currentTarget.style.backgroundColor = theme.colors.accentHover;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = theme.colors.accent;
+                    }}
                   >
                     {loading ? t('common.creating') : t('common.continue')}
                     <ArrowRight className="w-5 h-5" />
@@ -475,15 +596,27 @@ const Setup: React.FC = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-8"
               >
-                <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold text-slate-900 mb-3">{t('setup.step3.congratulations')}</h2>
-                <p className="text-slate-600 mb-8">
+                <CheckCircle className="w-20 h-20 mx-auto mb-6" style={{ color: theme.colors.success }} />
+                <h2 className="text-3xl font-bold mb-3" style={{ color: theme.colors.textPrimary }}>{t('setup.step3.congratulations')}</h2>
+                <p className="mb-8" style={{ color: theme.colors.textSecondary }}>
                   {t('setup.step3.workspaceReady')}
                 </p>
                 <button
                   onClick={handleComplete}
                   disabled={loading}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="font-semibold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    backgroundColor: theme.colors.accent,
+                    color: '#FFFFFF'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) {
+                      e.currentTarget.style.backgroundColor = theme.colors.accentHover;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = theme.colors.accent;
+                  }}
                 >
                   {loading ? t('setup.step3.finalizing') : t('setup.step3.accessPrismFlow')}
                 </button>
@@ -493,6 +626,7 @@ const Setup: React.FC = () => {
         </div>
       </div>
     </div>
+    </ThemeLayout>
   );
 };
 

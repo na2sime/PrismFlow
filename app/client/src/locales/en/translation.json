@@ -207,6 +207,7 @@
     "profileTab": "Profile",
     "securityTab": "Security",
     "2faTab": "Two-Factor Authentication",
+    "appearanceTab": "Appearance",
     "profilePicture": "Profile Picture",
     "uploadPicture": "Upload Picture",
     "deletePicture": "Delete Picture",
@@ -243,6 +244,61 @@
     "cropProfilePicture": "Crop Profile Picture",
     "zoom": "Zoom",
     "rotate": "Rotate",
-    "applyCrop": "Apply"
+    "applyCrop": "Apply",
+    "theme": "Theme",
+    "themeDescription": "Choose your preferred color theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themePurpleNight": "Purple Night",
+    "themeHowl": "Howl",
+    "themeUpdated": "Theme updated successfully"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Manage and track your projects",
+    "create": "New Project",
+    "createFirst": "Create your first project",
+    "empty": "No projects yet",
+    "noResults": "No projects found",
+    "search": "Search projects...",
+    "tasks": "tasks",
+    "members": "members",
+    "confirmDelete": "Are you sure you want to delete this project?",
+    "stats": {
+      "total": "Total Projects",
+      "active": "Active",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "modal": {
+      "createTitle": "Create New Project",
+      "editTitle": "Edit Project",
+      "name": "Project Name",
+      "namePlaceholder": "Enter project name",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter project description...",
+      "icon": "Icon",
+      "color": "Color",
+      "preview": "Preview",
+      "status": "Status",
+      "create": "Create Project",
+      "errors": {
+        "nameRequired": "Project name is required",
+        "nameTooLong": "Project name is too long (max 100 characters)",
+        "descriptionTooLong": "Description is too long (max 500 characters)",
+        "saveFailed": "Failed to save project"
+      }
+    }
   }
 }

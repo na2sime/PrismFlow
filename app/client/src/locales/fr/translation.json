@@ -207,6 +207,7 @@
     "profileTab": "Profil",
     "securityTab": "Sécurité",
     "2faTab": "Authentification à deux facteurs",
+    "appearanceTab": "Apparence",
     "profilePicture": "Photo de profil",
     "uploadPicture": "Télécharger une photo",
     "deletePicture": "Supprimer la photo",
@@ -243,6 +244,61 @@
     "cropProfilePicture": "Recadrer la photo de profil",
     "zoom": "Zoom",
     "rotate": "Pivoter",
-    "applyCrop": "Appliquer"
+    "applyCrop": "Appliquer",
+    "theme": "Thème",
+    "themeDescription": "Choisissez votre thème de couleur préféré",
+    "themeLight": "Blanc",
+    "themeDark": "Sombre",
+    "themePurpleNight": "Nuit Pourpre",
+    "themeHowl": "Howl",
+    "themeUpdated": "Thème mis à jour avec succès"
+  },
+  "projects": {
+    "title": "Projets",
+    "subtitle": "Gérez et suivez vos projets",
+    "create": "Nouveau projet",
+    "createFirst": "Créer votre premier projet",
+    "empty": "Aucun projet pour le moment",
+    "noResults": "Aucun projet trouvé",
+    "search": "Rechercher des projets...",
+    "tasks": "tâches",
+    "members": "membres",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce projet ?",
+    "stats": {
+      "total": "Total des projets",
+      "active": "Actifs",
+      "completed": "Terminés",
+      "archived": "Archivés"
+    },
+    "filters": {
+      "all": "Tous",
+      "active": "Actifs",
+      "completed": "Terminés",
+      "archived": "Archivés"
+    },
+    "status": {
+      "active": "Actif",
+      "completed": "Terminé",
+      "archived": "Archivé"
+    },
+    "modal": {
+      "createTitle": "Créer un nouveau projet",
+      "editTitle": "Modifier le projet",
+      "name": "Nom du projet",
+      "namePlaceholder": "Entrez le nom du projet",
+      "description": "Description",
+      "descriptionPlaceholder": "Entrez la description du projet...",
+      "icon": "Icône",
+      "color": "Couleur",
+      "preview": "Aperçu",
+      "status": "Statut",
+      "create": "Créer le projet",
+      "errors": {
+        "nameRequired": "Le nom du projet est requis",
+        "nameTooLong": "Le nom du projet est trop long (max 100 caractères)",
+        "descriptionTooLong": "La description est trop longue (max 500 caractères)",
+        "saveFailed": "Échec de l'enregistrement du projet"
+      }
+    }
   }
 }

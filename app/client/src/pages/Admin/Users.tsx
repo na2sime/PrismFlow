@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
+import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface UserData {
   id: string;
@@ -46,6 +48,7 @@ interface Role {
 
 const Users: React.FC = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [users, setUsers] = useState<UserData[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
@@ -232,17 +235,21 @@ const Users: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
+    <ThemeLayout className="p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('users.title')}</h1>
-            <p className="text-slate-600">{t('users.subtitle')}</p>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>{t('users.title')}</h1>
+            <p style={{ color: theme.colors.textSecondary }}>{t('users.subtitle')}</p>
           </div>
           <button
             onClick={handleCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+            style={{
+              background: theme.colors.accent,
+              color: theme.colors.primary
+            }}
+            className="flex items-center gap-2 px-4 py-2 hover:opacity-90 rounded-lg transition-opacity"
           >
             <Plus className="w-5 h-5" />
             {t('users.newUser')}
@@ -250,89 +257,114 @@ const Users: React.FC = () => {
         </div>
 
         {/* Users Table */}
-        <div className="glass rounded-2xl overflow-hidden">
+        <div
+          style={{
+            background: theme.colors.glassBackground,
+            borderColor: theme.colors.glassBorder,
+          }}
+          className="backdrop-blur-md rounded-2xl overflow-hidden border"
+        >
           {loading ? (
             <div className="p-12 text-center">
-              <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-600">{t('common.loading')}</p>
+              <div
+                className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                style={{ borderColor: theme.colors.accent, borderTopColor: 'transparent' }}
+              ></div>
+              <p style={{ color: theme.colors.textSecondary }}>{t('common.loading')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200">
+                <thead style={{ background: theme.colors.surface, borderColor: theme.colors.surfaceBorder }} className="border-b">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">{t('users.user')}</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">{t('common.email')}</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">{t('users.role')}</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">{t('common.status')}</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">{t('common.createdAt')}</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-900">{t('common.actions')}</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>{t('users.user')}</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>{t('common.email')}</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>{t('users.role')}</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>{t('common.status')}</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>{t('common.createdAt')}</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>{t('common.actions')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody style={{ borderColor: theme.colors.surfaceBorder }} className="divide-y">
                   {users.map((user) => (
                     <motion.tr
                       key={user.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="hover:bg-slate-50 transition-colors"
+                      style={{ background: 'transparent' }}
+                      className="hover:opacity-80 transition-opacity"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center font-semibold"
+                            style={{
+                              background: theme.colors.accent,
+                              color: theme.colors.primary
+                            }}
+                          >
                             {user.firstName[0]}{user.lastName[0]}
                           </div>
                           <div>
-                            <p className="font-medium text-slate-900">{user.firstName} {user.lastName}</p>
-                            <p className="text-sm text-slate-500">@{user.username}</p>
+                            <p className="font-medium" style={{ color: theme.colors.textPrimary }}>{user.firstName} {user.lastName}</p>
+                            <p className="text-sm" style={{ color: theme.colors.textSecondary }}>@{user.username}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-slate-600">
+                        <div className="flex items-center gap-2" style={{ color: theme.colors.textSecondary }}>
                           <Mail className="w-4 h-4" />
                           {user.email}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
-                          ['Administrator', 'admin'].includes(user.role) ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-700'
-                        }`}>
+                        <span
+                          style={{
+                            backgroundColor: ['Administrator', 'admin'].includes(user.role) ? `${theme.colors.info}20` : `${theme.colors.accent}20`,
+                            color: ['Administrator', 'admin'].includes(user.role) ? theme.colors.info : theme.colors.accent
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium"
+                        >
                           {['Administrator', 'admin'].includes(user.role) ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
                           {user.role}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
-                          user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                        }`}>
+                        <span
+                          style={{
+                            backgroundColor: user.isActive ? `${theme.colors.success}20` : `${theme.colors.error}20`,
+                            color: user.isActive ? theme.colors.success : theme.colors.error
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium"
+                        >
                           {user.isActive ? t('common.active') : t('common.inactive')}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-600">
+                      <td className="px-6 py-4" style={{ color: theme.colors.textSecondary }}>
                         {new Date(user.createdAt).toLocaleDateString('fr-FR')}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleToggleStatus(user.id)}
-                            className={`p-2 rounded-lg transition-colors ${
-                              user.isActive ? 'hover:bg-red-50 text-red-600' : 'hover:bg-green-50 text-green-600'
-                            }`}
+                            style={{ color: user.isActive ? theme.colors.error : theme.colors.success }}
+                            className="p-2 rounded-lg hover:opacity-70 transition-opacity"
                             title={user.isActive ? t('users.deactivate') : t('users.activate')}
                           >
                             <Power className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleEdit(user)}
-                            className="p-2 hover:bg-blue-50 text-blue-600 rounded-lg transition-colors"
+                            style={{ color: theme.colors.accent }}
+                            className="p-2 hover:opacity-70 rounded-lg transition-opacity"
                             title={t('common.edit')}
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(user.id)}
-                            className="p-2 hover:bg-red-50 text-red-600 rounded-lg transition-colors"
+                            style={{ color: theme.colors.error }}
+                            className="p-2 hover:opacity-70 rounded-lg transition-opacity"
                             title={t('common.delete')}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -362,48 +394,60 @@ const Users: React.FC = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                style={{
+                  background: theme.colors.surface,
+                  color: theme.colors.textPrimary
+                }}
+                className="rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-slate-900">
+                  <h2 className="text-2xl font-bold" style={{ color: theme.colors.textPrimary }}>
                     {editingUser ? t('users.editUser') : t('users.newUser')}
                   </h2>
                   <button
                     onClick={() => setShowModal(false)}
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                    style={{ background: theme.colors.surfaceHover }}
+                    className="p-2 hover:opacity-80 rounded-lg transition-opacity"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-5 h-5" style={{ color: theme.colors.textPrimary }} />
                   </button>
                 </div>
 
                 {error && (
-                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  <div
+                    style={{
+                      backgroundColor: `${theme.colors.error}10`,
+                      borderColor: `${theme.colors.error}40`,
+                      color: theme.colors.error
+                    }}
+                    className="mb-4 p-4 border rounded-lg text-sm"
+                  >
                     {error}
                   </div>
                 )}
 
                 {/* Tabs - Only show for editing */}
                 {editingUser && (
-                  <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-lg">
+                  <div className="flex gap-1 mb-6 p-1 rounded-lg" style={{ background: theme.colors.surfaceHover }}>
                     <button
                       type="button"
                       onClick={() => setActiveTab('info')}
-                      className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
-                        activeTab === 'info'
-                          ? 'bg-white text-slate-900 shadow-sm'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                      style={{
+                        background: activeTab === 'info' ? theme.colors.surface : 'transparent',
+                        color: activeTab === 'info' ? theme.colors.textPrimary : theme.colors.textSecondary
+                      }}
+                      className="flex-1 px-4 py-2 rounded-md font-medium transition-colors shadow-sm"
                     >
                       {t('users.information')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setActiveTab('roles')}
-                      className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
-                        activeTab === 'roles'
-                          ? 'bg-white text-slate-900 shadow-sm'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
+                      style={{
+                        background: activeTab === 'roles' ? theme.colors.surface : 'transparent',
+                        color: activeTab === 'roles' ? theme.colors.textPrimary : theme.colors.textSecondary
+                      }}
+                      className="flex-1 px-4 py-2 rounded-md font-medium transition-colors shadow-sm"
                     >
                       {t('users.rolesAndPermissions')}
                     </button>
@@ -416,56 +460,81 @@ const Users: React.FC = () => {
                     <>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">{t('common.firstName')}</label>
+                          <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>{t('common.firstName')}</label>
                           <input
                             type="text"
                             value={formData.firstName}
                             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              background: theme.colors.surfaceHover,
+                              borderColor: theme.colors.surfaceBorder,
+                              color: theme.colors.textPrimary
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
                             required
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">{t('common.lastName')}</label>
+                          <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>{t('common.lastName')}</label>
                           <input
                             type="text"
                             value={formData.lastName}
                             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              background: theme.colors.surfaceHover,
+                              borderColor: theme.colors.surfaceBorder,
+                              color: theme.colors.textPrimary
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
                             required
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">{t('common.username')}</label>
+                        <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>{t('common.username')}</label>
                         <input
                           type="text"
                           value={formData.username}
                           onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                          className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          style={{
+                            background: theme.colors.surfaceHover,
+                            borderColor: theme.colors.surfaceBorder,
+                            color: theme.colors.textPrimary
+                          }}
+                          className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
                           required
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">{t('common.email')}</label>
+                        <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>{t('common.email')}</label>
                         <input
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          style={{
+                            background: theme.colors.surfaceHover,
+                            borderColor: theme.colors.surfaceBorder,
+                            color: theme.colors.textPrimary
+                          }}
+                          className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
                           required
                         />
                       </div>
 
                       {!editingUser && (
                         <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-2">{t('users.role')}</label>
+                          <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>{t('users.role')}</label>
                           <select
                             value={formData.role}
                             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              background: theme.colors.surfaceHover,
+                              borderColor: theme.colors.surfaceBorder,
+                              color: theme.colors.textPrimary
+                            }}
+                            className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
                             required
                           >
                             {roles.map((role) => (
@@ -475,18 +544,23 @@ const Users: React.FC = () => {
                               </option>
                             ))}
                           </select>
-                          <p className="text-xs text-slate-500 mt-2">
+                          <p className="text-xs mt-2" style={{ color: theme.colors.textSecondary }}>
                             {t('users.passwordAutoGenerated')}
                           </p>
                         </div>
                       )}
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">{t('common.status')}</label>
+                        <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>{t('common.status')}</label>
                         <select
                           value={formData.isActive ? 'active' : 'inactive'}
                           onChange={(e) => setFormData({ ...formData, isActive: e.target.value === 'active' })}
-                          className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          style={{
+                            background: theme.colors.surfaceHover,
+                            borderColor: theme.colors.surfaceBorder,
+                            color: theme.colors.textPrimary
+                          }}
+                          className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2"
                         >
                           <option value="active">{t('common.active')}</option>
                           <option value="inactive">{t('common.inactive')}</option>
@@ -498,8 +572,8 @@ const Users: React.FC = () => {
                   {/* Tab Content - Roles & Permissions */}
                   {editingUser && activeTab === 'roles' && (
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-3">{t('users.additionalRoles')}</label>
-                      <p className="text-sm text-slate-600 mb-4">{t('users.selectAdditionalRoles')}</p>
+                      <label className="block text-sm font-medium mb-3" style={{ color: theme.colors.textPrimary }}>{t('users.additionalRoles')}</label>
+                      <p className="text-sm mb-4" style={{ color: theme.colors.textSecondary }}>{t('users.selectAdditionalRoles')}</p>
                       <div className="space-y-2 max-h-96 overflow-y-auto">
                         {roles.map((role) => {
                           const isAssigned = userRoles.some(r => r.id === role.id);
@@ -507,33 +581,41 @@ const Users: React.FC = () => {
                             <div
                               key={role.id}
                               onClick={() => handleToggleRole(role.id)}
-                              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                                isAssigned
-                                  ? 'border-purple-500 bg-purple-50'
-                                  : 'border-slate-200 hover:border-purple-300 hover:bg-slate-50'
-                              }`}
+                              style={{
+                                borderColor: isAssigned ? theme.colors.accent : theme.colors.surfaceBorder,
+                                backgroundColor: isAssigned ? `${theme.colors.accent}10` : 'transparent'
+                              }}
+                              className="p-4 border-2 rounded-lg cursor-pointer transition-all hover:opacity-80"
                             >
                               <div className="flex items-center gap-3">
-                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                                  isAssigned
-                                    ? 'border-purple-600 bg-purple-600'
-                                    : 'border-slate-300'
-                                }`}>
-                                  {isAssigned && <Check className="w-4 h-4 text-white" />}
+                                <div
+                                  style={{
+                                    borderColor: isAssigned ? theme.colors.accent : theme.colors.surfaceBorder,
+                                    backgroundColor: isAssigned ? theme.colors.accent : 'transparent'
+                                  }}
+                                  className="w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0"
+                                >
+                                  {isAssigned && <Check className="w-4 h-4" style={{ color: theme.colors.primary }} />}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2">
-                                    <p className="font-semibold text-slate-900">{role.name}</p>
+                                    <p className="font-semibold" style={{ color: theme.colors.textPrimary }}>{role.name}</p>
                                     {role.isSystem && (
-                                      <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded flex-shrink-0">
+                                      <span
+                                        style={{
+                                          backgroundColor: `${theme.colors.info}20`,
+                                          color: theme.colors.info
+                                        }}
+                                        className="px-2 py-0.5 text-xs font-medium rounded flex-shrink-0"
+                                      >
                                         {t('users.system')}
                                       </span>
                                     )}
                                   </div>
                                   {role.description && (
-                                    <p className="text-sm text-slate-600 mt-1">{role.description}</p>
+                                    <p className="text-sm mt-1" style={{ color: theme.colors.textSecondary }}>{role.description}</p>
                                   )}
-                                  <p className="text-xs text-slate-500 mt-1">
+                                  <p className="text-xs mt-1" style={{ color: theme.colors.textTertiary }}>
                                     {role.permissions.length} {role.permissions.length > 1 ? t('common.permissions') : t('common.permission')}
                                   </p>
                                 </div>
@@ -549,13 +631,22 @@ const Users: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setShowModal(false)}
-                      className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                      style={{
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary,
+                        background: theme.colors.surfaceHover
+                      }}
+                      className="flex-1 px-4 py-2 border rounded-lg hover:opacity-80 transition-opacity"
                     >
                       {t('common.cancel')}
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                      style={{
+                        background: theme.colors.accent,
+                        color: theme.colors.primary
+                      }}
+                      className="flex-1 px-4 py-2 hover:opacity-90 rounded-lg transition-opacity flex items-center justify-center gap-2"
                     >
                       <Save className="w-4 h-4" />
                       {editingUser ? t('common.update') : t('common.create')}
@@ -567,7 +658,7 @@ const Users: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
-    </div>
+    </ThemeLayout>
   );
 };
 

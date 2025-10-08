@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { User, Lock, Shield, Camera, X } from 'lucide-react';
+import { User, Lock, Shield, Camera, X, Palette } from 'lucide-react';
 import { apiService } from '../../services/api';
 import ProfilePictureCrop from '../../components/ProfilePictureCrop/ProfilePictureCrop';
+import { useTheme } from '../../contexts/ThemeContext';
+import { themes, ThemeType } from '../../themes';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
@@ -18,7 +20,8 @@ interface UserProfile {
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'profile' | 'security' | '2fa'>('profile');
+  const { themeType, setTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState<'profile' | 'security' | '2fa' | 'appearance'>('profile');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -268,6 +271,17 @@ const Settings: React.FC = () => {
             >
               <Shield size={20} />
               {t('settings.2faTab')}
+            </button>
+            <button
+              onClick={() => setActiveTab('appearance')}
+              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
+                activeTab === 'appearance'
+                  ? 'border-b-2 border-blue-500 text-blue-600'
+                  : 'text-slate-600 hover:text-slate-800'
+              }`}
+            >
+              <Palette size={20} />
+              {t('settings.appearanceTab')}
             </button>
           </div>
         </div>
@@ -532,6 +546,90 @@ const Settings: React.FC = () => {
                   </button>
                 </form>
               )}
+            </div>
+          )}
+
+          {/* Appearance Tab */}
+          {activeTab === 'appearance' && (
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('settings.theme')}</h2>
+                <p className="text-slate-600 mb-6">{t('settings.themeDescription')}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {(Object.keys(themes) as ThemeType[]).map((theme) => {
+                    const themeConfig = themes[theme];
+                    const isSelected = themeType === theme;
+
+                    return (
+                      <button
+                        key={theme}
+                        onClick={async () => {
+                          try {
+                            await setTheme(theme);
+                            setSuccess(t('settings.themeUpdated'));
+                            setTimeout(() => setSuccess(null), 3000);
+                          } catch (error) {
+                            setError('Failed to update theme');
+                            setTimeout(() => setError(null), 3000);
+                          }
+                        }}
+                        className={`relative p-6 rounded-lg border-2 transition-all ${
+                          isSelected
+                            ? 'border-blue-500 shadow-lg scale-105'
+                            : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
+                        }`}
+                      >
+                        {/* Theme Preview */}
+                        <div className="mb-4">
+                          <div
+                            className="h-24 rounded-lg mb-3"
+                            style={{
+                              background: themeConfig.colors.gradient,
+                            }}
+                          />
+                          <div className="flex gap-2 justify-center">
+                            <div
+                              className="w-8 h-8 rounded"
+                              style={{ backgroundColor: themeConfig.colors.accent }}
+                            />
+                            <div
+                              className="w-8 h-8 rounded"
+                              style={{ backgroundColor: themeConfig.colors.success }}
+                            />
+                            <div
+                              className="w-8 h-8 rounded"
+                              style={{ backgroundColor: themeConfig.colors.warning }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Theme Name */}
+                        <p className="font-semibold text-slate-900">
+                          {t(`settings.theme${themeConfig.name.replace(/ /g, '')}`)}
+                        </p>
+
+                        {/* Selected Indicator */}
+                        {isSelected && (
+                          <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg
+                              className="w-4 h-4 text-white"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path d="M5 13l4 4L19 7"></path>
+                            </svg>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>

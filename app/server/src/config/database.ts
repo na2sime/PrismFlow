@@ -237,6 +237,7 @@ export class Database {
         const hasTwoFactorSecret = columns.some(col => col.name === 'twoFactorSecret');
         const hasTwoFactorEnabled = columns.some(col => col.name === 'twoFactorEnabled');
         const hasProfilePicture = columns.some(col => col.name === 'profilePicture');
+        const hasTheme = columns.some(col => col.name === 'theme');
 
         if (!hasTwoFactorSecret) {
           this.db.run('ALTER TABLE users ADD COLUMN twoFactorSecret TEXT NULL', (err) => {
@@ -264,6 +265,16 @@ export class Database {
               console.error('Error adding profilePicture column:', err.message);
             } else {
               console.log('✅ Added profilePicture column to users table');
+            }
+          });
+        }
+
+        if (!hasTheme) {
+          this.db.run('ALTER TABLE users ADD COLUMN theme TEXT NOT NULL DEFAULT "dark"', (err) => {
+            if (err && !err.message.includes('duplicate column name')) {
+              console.error('Error adding theme column:', err.message);
+            } else {
+              console.log('✅ Added theme column to users table');
             }
           });
         }

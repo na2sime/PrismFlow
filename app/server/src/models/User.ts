@@ -51,8 +51,8 @@ export class UserModel {
 
     return new Promise((resolve, reject) => {
       const query = `
-        INSERT INTO users (id, username, email, password, firstName, lastName, role, isActive, profilePicture, twoFactorSecret, twoFactorEnabled, createdAt, updatedAt)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (id, username, email, password, firstName, lastName, role, isActive, profilePicture, theme, twoFactorSecret, twoFactorEnabled, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       database.getDb().run(query, [
@@ -65,6 +65,7 @@ export class UserModel {
         userData.role,
         userData.isActive ? 1 : 0,
         null,
+        userData.theme || 'dark',
         null,
         0,
         now,
@@ -83,6 +84,7 @@ export class UserModel {
             role: userData.role,
             isActive: userData.isActive,
             profilePicture: null,
+            theme: userData.theme || 'dark',
             twoFactorSecret: null,
             twoFactorEnabled: false,
             lastLogin: null,
@@ -110,7 +112,7 @@ export class UserModel {
     });
   }
 
-  static async updateProfile(id: string, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'username'>>): Promise<User | null> {
+  static async updateProfile(id: string, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'username' | 'theme'>>): Promise<User | null> {
     const now = new Date().toISOString();
     const fields = [];
     const values = [];
@@ -126,6 +128,10 @@ export class UserModel {
     if (updates.username) {
       fields.push('username = ?');
       values.push(updates.username);
+    }
+    if (updates.theme) {
+      fields.push('theme = ?');
+      values.push(updates.theme);
     }
 
     if (fields.length === 0) {
@@ -372,6 +378,7 @@ export class UserModel {
       role: row.role,
       isActive: row.isActive === 1,
       profilePicture: row.profilePicture || null,
+      theme: row.theme || 'dark',
       twoFactorSecret: row.twoFactorSecret || null,
       twoFactorEnabled: row.twoFactorEnabled === 1,
       lastLogin: row.lastLogin ? new Date(row.lastLogin) : null,

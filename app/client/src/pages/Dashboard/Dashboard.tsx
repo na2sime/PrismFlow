@@ -11,6 +11,8 @@ import {
   Activity,
   Calendar
 } from 'lucide-react';
+import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface StatCardProps {
   icon: React.ComponentType<any>;
@@ -29,15 +31,21 @@ const StatCard: React.FC<StatCardProps> = ({
   changeType,
   delay
 }) => {
+  const { theme } = useTheme();
+
   const changeColors = {
-    positive: 'text-green-600',
-    negative: 'text-red-600',
-    neutral: 'text-slate-600'
+    positive: theme.colors.success,
+    negative: theme.colors.error,
+    neutral: theme.colors.textSecondary
   };
 
   return (
     <motion.div
-      className="glass rounded-2xl p-6 hover:shadow-2xl transition-shadow"
+      style={{
+        background: theme.colors.glassBackground,
+        borderColor: theme.colors.glassBorder,
+      }}
+      className="backdrop-blur-md rounded-2xl p-6 hover:shadow-2xl transition-shadow border"
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
@@ -51,15 +59,21 @@ const StatCard: React.FC<StatCardProps> = ({
       }}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center"
+          style={{
+            backgroundColor: `${theme.colors.accent}20`,
+            color: theme.colors.accent
+          }}
+        >
           <Icon size={24} />
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-slate-600 mb-1">{title}</h3>
-        <div className="text-3xl font-bold text-slate-900 mb-2">{value}</div>
+        <h3 className="text-sm font-medium mb-1" style={{ color: theme.colors.textSecondary }}>{title}</h3>
+        <div className="text-3xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>{value}</div>
       </div>
-      <div className={`flex items-center gap-1 text-sm ${changeColors[changeType]}`}>
+      <div className="flex items-center gap-1 text-sm" style={{ color: changeColors[changeType] }}>
         <TrendingUp size={16} />
         <span>{change}</span>
       </div>
@@ -69,6 +83,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const stats = [
     {
@@ -126,7 +141,7 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="p-8">
+    <ThemeLayout className="p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -137,17 +152,30 @@ const Dashboard: React.FC = () => {
         >
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-slate-900 mb-2">{t('dashboard.greeting', { name: 'John' })}</h1>
-              <p className="text-slate-600">
+              <h1 className="text-4xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>{t('dashboard.greeting', { name: 'John' })}</h1>
+              <p style={{ color: theme.colors.textSecondary }}>
                 {t('dashboard.subtitle')}
               </p>
             </div>
             <div className="flex gap-3">
-              <button className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-lg border border-slate-200 transition-colors flex items-center gap-2">
+              <button
+                style={{
+                  background: theme.colors.surface,
+                  color: theme.colors.textPrimary,
+                  borderColor: theme.colors.surfaceBorder
+                }}
+                className="px-4 py-2 hover:opacity-80 rounded-lg border transition-colors flex items-center gap-2"
+              >
                 <Calendar size={20} />
                 {t('dashboard.buttons.viewCalendar')}
               </button>
-              <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2">
+              <button
+                style={{
+                  background: theme.colors.accent,
+                  color: theme.colors.primary
+                }}
+                className="px-4 py-2 hover:opacity-90 rounded-lg transition-colors flex items-center gap-2"
+              >
                 <Activity size={20} />
                 {t('dashboard.buttons.quickReport')}
               </button>
@@ -170,14 +198,21 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recent Projects */}
           <motion.div
-            className="lg:col-span-2 glass rounded-2xl p-6"
+            style={{
+              background: theme.colors.glassBackground,
+              borderColor: theme.colors.glassBorder,
+            }}
+            className="lg:col-span-2 backdrop-blur-md rounded-2xl p-6 border"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-slate-900">{t('dashboard.recentProjects')}</h2>
-              <button className="text-blue-500 hover:text-blue-600 text-sm font-medium transition-colors">
+              <h2 className="text-xl font-bold" style={{ color: theme.colors.textPrimary }}>{t('dashboard.recentProjects')}</h2>
+              <button
+                style={{ color: theme.colors.accent }}
+                className="hover:opacity-80 text-sm font-medium transition-opacity"
+              >
                 {t('dashboard.viewAll')}
               </button>
             </div>
@@ -185,7 +220,11 @@ const Dashboard: React.FC = () => {
               {recentProjects.map((project, index) => (
                 <motion.div
                   key={project.id}
-                  className="p-4 rounded-xl bg-white/50 hover:bg-white/70 transition-colors cursor-pointer"
+                  style={{
+                    background: theme.colors.surface,
+                    borderColor: theme.colors.surfaceBorder
+                  }}
+                  className="p-4 rounded-xl hover:opacity-80 transition-opacity cursor-pointer border"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
@@ -193,8 +232,8 @@ const Dashboard: React.FC = () => {
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="font-semibold text-slate-900 mb-1">{project.name}</h3>
-                      <div className="flex items-center gap-4 text-sm text-slate-600">
+                      <h3 className="font-semibold mb-1" style={{ color: theme.colors.textPrimary }}>{project.name}</h3>
+                      <div className="flex items-center gap-4 text-sm" style={{ color: theme.colors.textSecondary }}>
                         <span className="flex items-center gap-1">
                           <Users size={16} />
                           {project.members} {t('dashboard.members')}
@@ -205,12 +244,16 @@ const Dashboard: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-semibold text-slate-900 mb-1">{project.progress}%</div>
+                      <div className="text-sm font-semibold mb-1" style={{ color: theme.colors.textPrimary }}>{project.progress}%</div>
                     </div>
                   </div>
-                  <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className="w-full h-2 rounded-full overflow-hidden"
+                    style={{ backgroundColor: `${theme.colors.textSecondary}40` }}
+                  >
                     <motion.div
-                      className="h-full bg-blue-500 rounded-full"
+                      className="h-full rounded-full"
+                      style={{ backgroundColor: theme.colors.accent }}
                       initial={{ width: 0 }}
                       animate={{ width: `${project.progress}%` }}
                       transition={{ duration: 1, delay: 0.8 + index * 0.1 }}
@@ -223,58 +266,102 @@ const Dashboard: React.FC = () => {
 
           {/* Quick Actions */}
           <motion.div
-            className="glass rounded-2xl p-6"
+            style={{
+              background: theme.colors.glassBackground,
+              borderColor: theme.colors.glassBorder,
+            }}
+            className="backdrop-blur-md rounded-2xl p-6 border"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <h2 className="text-xl font-bold text-slate-900 mb-6">{t('dashboard.quickActions.title')}</h2>
+            <h2 className="text-xl font-bold mb-6" style={{ color: theme.colors.textPrimary }}>{t('dashboard.quickActions.title')}</h2>
             <div className="space-y-3">
               <motion.button
-                className="w-full p-4 bg-white/50 hover:bg-white/70 rounded-xl transition-colors flex items-center gap-3 text-left"
+                style={{
+                  background: theme.colors.surface,
+                  borderColor: theme.colors.surfaceBorder
+                }}
+                className="w-full p-4 hover:opacity-80 rounded-xl transition-opacity flex items-center gap-3 text-left border"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${theme.colors.accent}20`,
+                    color: theme.colors.accent
+                  }}
+                >
                   <Folder size={20} />
                 </div>
-                <span className="font-medium text-slate-900">{t('dashboard.quickActions.newProject')}</span>
+                <span className="font-medium" style={{ color: theme.colors.textPrimary }}>{t('dashboard.quickActions.newProject')}</span>
               </motion.button>
               <motion.button
-                className="w-full p-4 bg-white/50 hover:bg-white/70 rounded-xl transition-colors flex items-center gap-3 text-left"
+                style={{
+                  background: theme.colors.surface,
+                  borderColor: theme.colors.surfaceBorder
+                }}
+                className="w-full p-4 hover:opacity-80 rounded-xl transition-opacity flex items-center gap-3 text-left border"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="w-10 h-10 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${theme.colors.success}20`,
+                    color: theme.colors.success
+                  }}
+                >
                   <CheckCircle size={20} />
                 </div>
-                <span className="font-medium text-slate-900">{t('dashboard.quickActions.addTask')}</span>
+                <span className="font-medium" style={{ color: theme.colors.textPrimary }}>{t('dashboard.quickActions.addTask')}</span>
               </motion.button>
               <motion.button
-                className="w-full p-4 bg-white/50 hover:bg-white/70 rounded-xl transition-colors flex items-center gap-3 text-left"
+                style={{
+                  background: theme.colors.surface,
+                  borderColor: theme.colors.surfaceBorder
+                }}
+                className="w-full p-4 hover:opacity-80 rounded-xl transition-opacity flex items-center gap-3 text-left border"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="w-10 h-10 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${theme.colors.info}20`,
+                    color: theme.colors.info
+                  }}
+                >
                   <Users size={20} />
                 </div>
-                <span className="font-medium text-slate-900">{t('dashboard.quickActions.inviteTeam')}</span>
+                <span className="font-medium" style={{ color: theme.colors.textPrimary }}>{t('dashboard.quickActions.inviteTeam')}</span>
               </motion.button>
               <motion.button
-                className="w-full p-4 bg-white/50 hover:bg-white/70 rounded-xl transition-colors flex items-center gap-3 text-left"
+                style={{
+                  background: theme.colors.surface,
+                  borderColor: theme.colors.surfaceBorder
+                }}
+                className="w-full p-4 hover:opacity-80 rounded-xl transition-opacity flex items-center gap-3 text-left border"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <div className="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center">
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  style={{
+                    backgroundColor: `${theme.colors.warning}20`,
+                    color: theme.colors.warning
+                  }}
+                >
                   <BarChart3 size={20} />
                 </div>
-                <span className="font-medium text-slate-900">{t('dashboard.quickActions.viewReports')}</span>
+                <span className="font-medium" style={{ color: theme.colors.textPrimary }}>{t('dashboard.quickActions.viewReports')}</span>
               </motion.button>
             </div>
           </motion.div>
         </div>
       </div>
-    </div>
+    </ThemeLayout>
   );
 };
 

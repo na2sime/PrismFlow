@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SetupProvider, useSetup } from './contexts/SetupContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/Layout/MainLayout';
 import Setup from './pages/Setup/Setup';
@@ -9,6 +10,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Users from './pages/Admin/Users';
 import Roles from './pages/Admin/Roles';
 import Settings from './pages/Settings/Settings';
+import Projects from './pages/Projects/Projects';
 import { useTranslation } from 'react-i18next';
 
 const AppRoutes: React.FC = () => {
@@ -47,7 +49,7 @@ const AppRoutes: React.FC = () => {
             <MainLayout>
               <Routes>
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/projects" element={<div className="p-8"><h1 className="text-2xl font-bold">Projets</h1></div>} />
+                <Route path="/projects" element={<Projects />} />
                 <Route path="/tasks" element={<div className="p-8"><h1 className="text-2xl font-bold">Tâches</h1></div>} />
                 <Route path="/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Équipe</h1></div>} />
                 <Route path="/admin/users" element={<Users />} />
@@ -67,7 +69,9 @@ function App() {
   return (
     <Router>
       <SetupProvider>
-        <AppRoutes />
+        <ThemeProvider>
+          <AppRoutes />
+        </ThemeProvider>
       </SetupProvider>
     </Router>
   );

@@ -7,7 +7,8 @@ import fs from 'fs';
 const updateProfileSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).optional(),
   firstName: Joi.string().min(1).max(50).optional(),
-  lastName: Joi.string().min(1).max(50).optional()
+  lastName: Joi.string().min(1).max(50).optional(),
+  theme: Joi.string().valid('light', 'dark', 'purple-night', 'howl').optional()
 });
 
 const changePasswordSchema = Joi.object({

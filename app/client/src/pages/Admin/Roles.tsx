@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Shield, Plus, Edit, Trash2, X, Check, AlertCircle } from 'lucide-react';
+import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface Role {
   id: string;
@@ -24,6 +26,7 @@ interface PermissionGroup {
 
 const Roles: React.FC = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   // Permission groups
   const PERMISSION_GROUPS: PermissionGroup[] = [
@@ -217,25 +220,34 @@ const Roles: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <ThemeLayout className="p-8">
+        <div className="flex items-center justify-center h-64">
+          <div
+            className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin"
+            style={{ borderColor: theme.colors.accent, borderTopColor: 'transparent' }}
+          ></div>
+        </div>
+      </ThemeLayout>
     );
   }
 
   return (
-    <div className="p-8">
+    <ThemeLayout className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-            <Shield className="w-8 h-8 text-purple-600" />
+          <h1 className="text-3xl font-bold flex items-center gap-2" style={{ color: theme.colors.textPrimary }}>
+            <Shield className="w-8 h-8" style={{ color: theme.colors.accent }} />
             {t('roles.title')}
           </h1>
-          <p className="text-slate-600 mt-1">{t('roles.subtitle')}</p>
+          <p className="mt-1" style={{ color: theme.colors.textSecondary }}>{t('roles.subtitle')}</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+          style={{
+            background: theme.colors.accent,
+            color: theme.colors.primary
+          }}
         >
           <Plus className="w-5 h-5" />
           {t('roles.newRole')}
@@ -243,56 +255,102 @@ const Roles: React.FC = () => {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+        <div
+          className="mb-4 p-4 border rounded-lg flex items-center gap-2"
+          style={{
+            backgroundColor: `${theme.colors.error}10`,
+            borderColor: `${theme.colors.error}40`,
+            color: theme.colors.error
+          }}
+        >
           <AlertCircle className="w-5 h-5" />
           {error}
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+      <div
+        className="rounded-lg shadow-sm border"
+        style={{
+          background: theme.colors.glassBackground,
+          borderColor: theme.colors.glassBorder
+        }}
+      >
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50">
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+            <tr
+              className="border-b"
+              style={{
+                background: theme.colors.surface,
+                borderColor: theme.colors.surfaceBorder
+              }}
+            >
+              <th
+                className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                style={{ color: theme.colors.textPrimary }}
+              >
                 {t('users.role')}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <th
+                className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                style={{ color: theme.colors.textPrimary }}
+              >
                 {t('common.description')}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <th
+                className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                style={{ color: theme.colors.textPrimary }}
+              >
                 {t('common.permissions')}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <th
+                className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                style={{ color: theme.colors.textPrimary }}
+              >
                 {t('common.type')}
               </th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">
+              <th
+                className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider"
+                style={{ color: theme.colors.textPrimary }}
+              >
                 {t('common.actions')}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200">
+          <tbody className="divide-y" style={{ borderColor: theme.colors.surfaceBorder }}>
             {roles.map((role) => (
-              <tr key={role.id} className="hover:bg-slate-50 transition-colors">
+              <tr key={role.id} className="hover:opacity-80 transition-opacity">
                 <td className="px-6 py-4">
-                  <div className="font-medium text-slate-900">{role.name}</div>
+                  <div className="font-medium" style={{ color: theme.colors.textPrimary }}>{role.name}</div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-slate-600">
+                  <div className="text-sm" style={{ color: theme.colors.textSecondary }}>
                     {role.description || '-'}
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-slate-600">
+                  <div className="text-sm" style={{ color: theme.colors.textSecondary }}>
                     {t('roles.permissionsCount', { count: role.permissions.length })}
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   {role.isSystem ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      style={{
+                        backgroundColor: `${theme.colors.info}20`,
+                        color: theme.colors.info
+                      }}
+                    >
                       {t('users.system')}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    <span
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      style={{
+                        backgroundColor: `${theme.colors.textSecondary}20`,
+                        color: theme.colors.textSecondary
+                      }}
+                    >
                       {t('users.customRole')}
                     </span>
                   )}
@@ -301,27 +359,35 @@ const Roles: React.FC = () => {
                   <button
                     onClick={() => handleOpenModal(role)}
                     disabled={role.name === 'Administrator'}
-                    className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${
-                      role.name === 'Administrator'
-                        ? 'text-slate-400 cursor-not-allowed'
-                        : 'text-blue-600 hover:bg-blue-50'
-                    }`}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-opacity hover:opacity-70"
+                    style={{
+                      color: role.name === 'Administrator' ? theme.colors.textTertiary : theme.colors.accent,
+                      cursor: role.name === 'Administrator' ? 'not-allowed' : 'pointer'
+                    }}
                     title={role.name === 'Administrator' ? t('roles.systemRoleEditDisabled') : t('common.edit')}
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   {deleteConfirm === role.id ? (
                     <div className="inline-flex items-center gap-2">
-                      <span className="text-sm text-slate-600">{t('roles.confirmDelete')}</span>
+                      <span className="text-sm" style={{ color: theme.colors.textSecondary }}>{t('roles.confirmDelete')}</span>
                       <button
                         onClick={() => handleDelete(role.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+                        style={{
+                          background: theme.colors.error,
+                          color: theme.colors.primary
+                        }}
                       >
                         <Check className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteConfirm(null)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg hover:opacity-80 transition-opacity"
+                        style={{
+                          background: theme.colors.surfaceHover,
+                          color: theme.colors.textPrimary
+                        }}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -330,11 +396,11 @@ const Roles: React.FC = () => {
                     <button
                       onClick={() => setDeleteConfirm(role.id)}
                       disabled={role.name === 'Administrator'}
-                      className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors ${
-                        role.name === 'Administrator'
-                          ? 'text-slate-400 cursor-not-allowed'
-                          : 'text-red-600 hover:bg-red-50'
-                      }`}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg transition-opacity hover:opacity-70"
+                      style={{
+                        color: role.name === 'Administrator' ? theme.colors.textTertiary : theme.colors.error,
+                        cursor: role.name === 'Administrator' ? 'not-allowed' : 'pointer'
+                      }}
                       title={role.name === 'Administrator' ? t('roles.systemRoleDeleteDisabled') : t('common.delete')}
                     >
                       <Trash2 className="w-4 h-4" />
@@ -361,11 +427,20 @@ const Roles: React.FC = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden"
+              className="rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden"
+              style={{
+                background: theme.colors.surface
+              }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-slate-200">
-                <h2 className="text-2xl font-bold text-slate-900">
+              <div
+                className="p-6 border-b"
+                style={{ borderColor: theme.colors.surfaceBorder }}
+              >
+                <h2
+                  className="text-2xl font-bold"
+                  style={{ color: theme.colors.textPrimary }}
+                >
                   {editingRole ? t('roles.editRole') : t('roles.newRole')}
                 </h2>
               </div>
@@ -373,41 +448,67 @@ const Roles: React.FC = () => {
               <form onSubmit={handleSubmit} className="overflow-y-auto" style={{ maxHeight: 'calc(90vh - 180px)' }}>
                 <div className="p-6 space-y-6">
                   {error && (
-                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
+                    <div
+                      className="p-4 border rounded-lg flex items-center gap-2"
+                      style={{
+                        backgroundColor: `${theme.colors.error}10`,
+                        borderColor: `${theme.colors.error}40`,
+                        color: theme.colors.error
+                      }}
+                    >
                       <AlertCircle className="w-5 h-5" />
                       {error}
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                    <label
+                      className="block text-sm font-medium mb-1"
+                      style={{ color: theme.colors.textPrimary }}
+                    >
                       {t('roles.roleName')}
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none"
+                      style={{
+                        background: theme.colors.surfaceHover,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary
+                      }}
                       placeholder={t('roles.roleNamePlaceholder')}
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                    <label
+                      className="block text-sm font-medium mb-1"
+                      style={{ color: theme.colors.textPrimary }}
+                    >
                       {t('common.description')}
                     </label>
                     <textarea
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:outline-none"
+                      style={{
+                        background: theme.colors.surfaceHover,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary
+                      }}
                       placeholder={t('roles.descriptionPlaceholder')}
                       rows={3}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-3">
+                    <label
+                      className="block text-sm font-medium mb-3"
+                      style={{ color: theme.colors.textPrimary }}
+                    >
                       {t('roles.permissionsCount', { count: formData.permissions.length })}
                     </label>
                     <div className="space-y-4">
@@ -417,18 +518,35 @@ const Roles: React.FC = () => {
                         const someSelected = groupPermissionKeys.some(p => formData.permissions.includes(p));
 
                         return (
-                          <div key={group.name} className="border border-slate-200 rounded-lg p-4">
+                          <div
+                            key={group.name}
+                            className="border rounded-lg p-4"
+                            style={{
+                              borderColor: theme.colors.surfaceBorder,
+                              background: theme.colors.surface
+                            }}
+                          >
                             <div className="flex items-center gap-2 mb-3">
                               <input
                                 type="checkbox"
                                 checked={allSelected}
                                 onChange={() => toggleGroupPermissions(group)}
-                                className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
+                                className="w-4 h-4 rounded focus:ring-2"
+                                style={{
+                                  accentColor: theme.colors.accent
+                                }}
                               />
-                              <label className="font-semibold text-slate-900 cursor-pointer select-none" onClick={() => toggleGroupPermissions(group)}>
+                              <label
+                                className="font-semibold cursor-pointer select-none"
+                                style={{ color: theme.colors.textPrimary }}
+                                onClick={() => toggleGroupPermissions(group)}
+                              >
                                 {group.name}
                                 {someSelected && !allSelected && (
-                                  <span className="ml-2 text-xs text-purple-600 font-normal">
+                                  <span
+                                    className="ml-2 text-xs font-normal"
+                                    style={{ color: theme.colors.accent }}
+                                  >
                                     ({t('roles.partial')})
                                   </span>
                                 )}
@@ -438,13 +556,17 @@ const Roles: React.FC = () => {
                               {group.permissions.map((permission) => (
                                 <label
                                   key={permission.key}
-                                  className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer hover:text-slate-900"
+                                  className="flex items-center gap-2 text-sm cursor-pointer hover:opacity-80"
+                                  style={{ color: theme.colors.textSecondary }}
                                 >
                                   <input
                                     type="checkbox"
                                     checked={formData.permissions.includes(permission.key)}
                                     onChange={() => togglePermission(permission.key)}
-                                    className="w-4 h-4 text-purple-600 border-slate-300 rounded focus:ring-purple-500"
+                                    className="w-4 h-4 rounded focus:ring-2"
+                                    style={{
+                                      accentColor: theme.colors.accent
+                                    }}
                                   />
                                   {permission.label}
                                 </label>
@@ -457,17 +579,29 @@ const Roles: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 border-t border-slate-200 flex justify-end gap-3">
+                <div
+                  className="p-6 border-t flex justify-end gap-3"
+                  style={{ borderColor: theme.colors.surfaceBorder }}
+                >
                   <button
                     type="button"
                     onClick={handleCloseModal}
-                    className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="px-4 py-2 border rounded-lg hover:opacity-80 transition-opacity"
+                    style={{
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary,
+                      background: theme.colors.surfaceHover
+                    }}
                   >
                     {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                    style={{
+                      background: theme.colors.accent,
+                      color: theme.colors.primary
+                    }}
                   >
                     {editingRole ? t('common.update') : t('common.create')}
                   </button>
@@ -477,7 +611,7 @@ const Roles: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </ThemeLayout>
   );
 };
 
