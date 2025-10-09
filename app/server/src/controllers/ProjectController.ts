@@ -9,7 +9,10 @@ const createProjectSchema = Joi.object({
   settings: Joi.object({
     visibility: Joi.string().valid('private', 'public'),
     allowGuests: Joi.boolean(),
-    boardLayout: Joi.string().valid('kanban', 'list', 'calendar')
+    boardLayout: Joi.string().valid('scrum', 'kanban', 'list', 'calendar'),
+    color: Joi.string(),
+    icon: Joi.string(),
+    status: Joi.string().valid('active', 'archived', 'completed')
   })
 });
 
@@ -19,7 +22,10 @@ const updateProjectSchema = Joi.object({
   settings: Joi.object({
     visibility: Joi.string().valid('private', 'public'),
     allowGuests: Joi.boolean(),
-    boardLayout: Joi.string().valid('kanban', 'list', 'calendar')
+    boardLayout: Joi.string().valid('scrum', 'kanban', 'list', 'calendar'),
+    color: Joi.string(),
+    icon: Joi.string(),
+    status: Joi.string().valid('active', 'archived', 'completed')
   })
 });
 

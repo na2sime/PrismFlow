@@ -30,7 +30,10 @@ export interface Project {
 export interface ProjectSettings {
   visibility: 'private' | 'public';
   allowGuests: boolean;
-  boardLayout: 'kanban' | 'list' | 'calendar';
+  boardLayout: 'scrum' | 'kanban' | 'list' | 'calendar';
+  color?: string;
+  icon?: string;
+  status?: 'active' | 'archived' | 'completed';
 }
 
 export interface Task {

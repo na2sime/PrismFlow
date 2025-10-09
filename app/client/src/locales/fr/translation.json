@@ -290,6 +290,7 @@
       "descriptionPlaceholder": "Entrez la description du projet...",
       "icon": "Icône",
       "color": "Couleur",
+      "boardLayout": "Type de tableau",
       "preview": "Aperçu",
       "status": "Statut",
       "create": "Créer le projet",

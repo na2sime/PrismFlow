@@ -12,13 +12,18 @@ interface Project {
   id: string;
   name: string;
   description: string;
-  color: string;
-  icon: string;
-  status: 'active' | 'archived' | 'completed';
   ownerId: string;
   ownerName?: string;
   taskCount?: number;
   memberCount?: number;
+  settings?: {
+    visibility: 'private' | 'public';
+    allowGuests: boolean;
+    boardLayout: 'scrum' | 'kanban' | 'list' | 'calendar';
+    color?: string;
+    icon?: string;
+    status?: 'active' | 'archived' | 'completed';
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +57,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, project, onClose, o
     color: PRESET_COLORS[0],
     icon: PRESET_ICONS[0],
     status: 'active' as 'active' | 'archived' | 'completed',
+    boardLayout: 'kanban' as 'scrum' | 'kanban' | 'list' | 'calendar',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -61,9 +67,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, project, onClose, o
       setFormData({
         name: project.name,
         description: project.description,
-        color: project.color,
-        icon: project.icon,
-        status: project.status,
+        color: project.settings?.color || PRESET_COLORS[0],
+        icon: project.settings?.icon || PRESET_ICONS[0],
+        status: project.settings?.status || 'active',
+        boardLayout: project.settings?.boardLayout || 'kanban',
       });
     } else {
       setFormData({
@@ -72,6 +79,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, project, onClose, o
         color: PRESET_COLORS[0],
         icon: PRESET_ICONS[0],
         status: 'active',
+        boardLayout: 'kanban',
       });
     }
     setErrors({});
@@ -103,10 +111,24 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, project, onClose, o
 
     setLoading(true);
     try {
+      // Format data to match server schema
+      const projectPayload = {
+        name: formData.name,
+        description: formData.description,
+        settings: {
+          visibility: 'private' as const,
+          allowGuests: false,
+          boardLayout: formData.boardLayout,
+          color: formData.color,
+          icon: formData.icon,
+          status: formData.status,
+        }
+      };
+
       if (project) {
-        await apiService.updateProject(project.id, formData);
+        await apiService.updateProject(project.id, projectPayload);
       } else {
-        await apiService.createProject(formData);
+        await apiService.createProject(projectPayload);
       }
       onSave();
     } catch (error: any) {
@@ -281,6 +303,51 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, project, onClose, o
                       />
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* Board Layout */}
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
+                  {t('projects.modal.boardLayout')}
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { value: 'scrum', label: 'Scrum', icon: '🏃' },
+                    { value: 'kanban', label: 'Kanban', icon: '📋' },
+                    { value: 'list', label: 'List', icon: '📝' },
+                  ].map((layout) => (
+                    <button
+                      key={layout.value}
+                      type="button"
+                      onClick={() => handleChange('boardLayout', layout.value)}
+                      className="flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all"
+                      style={{
+                        backgroundColor: formData.boardLayout === layout.value ? `${theme.colors.accent}20` : theme.colors.surfaceHover,
+                        borderColor: formData.boardLayout === layout.value ? theme.colors.accent : theme.colors.surfaceBorder,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (formData.boardLayout !== layout.value) {
+                          e.currentTarget.style.backgroundColor = theme.colors.surface;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (formData.boardLayout !== layout.value) {
+                          e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+                        }
+                      }}
+                    >
+                      <span className="text-3xl">{layout.icon}</span>
+                      <span
+                        className="text-sm font-medium"
+                        style={{
+                          color: formData.boardLayout === layout.value ? theme.colors.accent : theme.colors.textSecondary,
+                        }}
+                      >
+                        {layout.label}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
 

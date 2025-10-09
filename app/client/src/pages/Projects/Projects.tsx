@@ -19,13 +19,18 @@ interface Project {
   id: string;
   name: string;
   description: string;
-  color: string;
-  icon: string;
-  status: 'active' | 'archived' | 'completed';
   ownerId: string;
   ownerName?: string;
   taskCount?: number;
   memberCount?: number;
+  settings: {
+    visibility: 'private' | 'public';
+    allowGuests: boolean;
+    boardLayout: 'scrum' | 'kanban' | 'list' | 'calendar';
+    color?: string;
+    icon?: string;
+    status?: 'active' | 'archived' | 'completed';
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -79,7 +84,7 @@ const Projects: React.FC = () => {
 
     // Status filter
     if (statusFilter !== 'all') {
-      filtered = filtered.filter((project) => project.status === statusFilter);
+      filtered = filtered.filter((project) => (project.settings?.status || 'active') === statusFilter);
     }
 
     setFilteredProjects(filtered);
@@ -121,9 +126,9 @@ const Projects: React.FC = () => {
 
   const stats = {
     total: projects.length,
-    active: projects.filter((p) => p.status === 'active').length,
-    completed: projects.filter((p) => p.status === 'completed').length,
-    archived: projects.filter((p) => p.status === 'archived').length,
+    active: projects.filter((p) => (p.settings?.status || 'active') === 'active').length,
+    completed: projects.filter((p) => (p.settings?.status || 'active') === 'completed').length,
+    archived: projects.filter((p) => (p.settings?.status || 'active') === 'archived').length,
   };
 
   return (

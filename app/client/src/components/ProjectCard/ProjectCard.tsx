@@ -9,13 +9,18 @@ interface Project {
   id: string;
   name: string;
   description: string;
-  color: string;
-  icon: string;
-  status: 'active' | 'archived' | 'completed';
   ownerId: string;
   ownerName?: string;
   taskCount?: number;
   memberCount?: number;
+  settings: {
+    visibility: 'private' | 'public';
+    allowGuests: boolean;
+    boardLayout: 'scrum' | 'kanban' | 'list' | 'calendar';
+    color?: string;
+    icon?: string;
+    status?: 'active' | 'archived' | 'completed';
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -40,7 +45,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = React.useState(false);
 
-  const getStatusColor = (status: Project['status']) => {
+  const getStatusColor = (status?: 'active' | 'archived' | 'completed') => {
     switch (status) {
       case 'active':
         return theme.colors.success;
@@ -49,7 +54,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       case 'archived':
         return theme.colors.textTertiary;
       default:
-        return theme.colors.textSecondary;
+        return theme.colors.success; // Default to active
     }
   };
 
@@ -58,6 +63,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     completed: t('projects.status.completed'),
     archived: t('projects.status.archived'),
   };
+
+  const projectColor = project.settings.color || '#3B82F6';
+  const projectIcon = project.settings.icon || '📁';
+  const projectStatus = project.settings.status || 'active';
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Don't navigate if clicking on buttons
@@ -102,9 +111,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           {/* Icon */}
           <div
             className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl"
-            style={{ backgroundColor: project.color }}
+            style={{ backgroundColor: projectColor }}
           >
-            {project.icon}
+            {projectIcon}
           </div>
 
           {/* Info */}
@@ -116,11 +125,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               <span
                 className="px-2 py-1 text-xs rounded-full"
                 style={{
-                  backgroundColor: getStatusColor(project.status),
+                  backgroundColor: getStatusColor(projectStatus),
                   color: theme.colors.primary,
                 }}
               >
-                {statusLabels[project.status]}
+                {statusLabels[projectStatus]}
               </span>
             </div>
             <p className="text-sm line-clamp-1" style={{ color: theme.colors.textSecondary }}>
@@ -240,9 +249,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       <div className="flex items-start justify-between mb-4">
         <div
           className="w-14 h-14 rounded-lg flex items-center justify-center text-3xl"
-          style={{ backgroundColor: project.color }}
+          style={{ backgroundColor: projectColor }}
         >
-          {project.icon}
+          {projectIcon}
         </div>
 
         <div className="relative">
@@ -326,11 +335,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         <span
           className="px-3 py-1 text-xs rounded-full"
           style={{
-            backgroundColor: getStatusColor(project.status),
+            backgroundColor: getStatusColor(projectStatus),
             color: theme.colors.primary,
           }}
         >
-          {statusLabels[project.status]}
+          {statusLabels[projectStatus]}
         </span>
       </div>
 
