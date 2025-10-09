@@ -230,6 +230,21 @@ class ApiService {
     return response.data;
   }
 
+  async getProjectMembers(projectId: string) {
+    const response = await this.axiosInstance.get(`/projects/${projectId}/members`);
+    return response.data;
+  }
+
+  async addProjectMember(projectId: string, userId: string, role: 'member' | 'viewer' = 'member') {
+    const response = await this.axiosInstance.post(`/projects/${projectId}/members`, { userId, role });
+    return response.data;
+  }
+
+  async removeProjectMember(projectId: string, userId: string) {
+    const response = await this.axiosInstance.delete(`/projects/${projectId}/members/${userId}`);
+    return response.data;
+  }
+
   // Task endpoints
   async getTasks(projectId: string) {
     const response = await this.axiosInstance.get(`/tasks?projectId=${projectId}`);

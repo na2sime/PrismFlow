@@ -264,6 +264,7 @@
     "tasks": "tâches",
     "members": "membres",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce projet ?",
+    "confirmArchive": "Êtes-vous sûr de vouloir archiver ce projet ?",
     "stats": {
       "total": "Total des projets",
       "active": "Actifs",
@@ -301,5 +302,42 @@
         "saveFailed": "Échec de l'enregistrement du projet"
       }
     }
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "Aperçu",
+      "tasks": "Tâches",
+      "members": "Membres",
+      "activity": "Activité"
+    },
+    "noDescription": "Aucune description",
+    "archive": "Archiver",
+    "stats": {
+      "totalTasks": "Total des tâches",
+      "teamMembers": "Membres de l'équipe",
+      "boardType": "Type de tableau"
+    },
+    "tasksComingSoon": "Tâches à venir",
+    "tasksDescription": "La gestion des tâches sera bientôt disponible",
+    "members": {
+      "title": "Membres de l'équipe",
+      "addMember": "Ajouter un membre",
+      "noMembers": "Aucun membre pour le moment",
+      "noMembersDescription": "Ajoutez des membres pour collaborer sur ce projet",
+      "changeRole": "Changer le rôle",
+      "removeMember": "Retirer",
+      "addMemberTitle": "Ajouter un membre",
+      "searchUser": "Rechercher un utilisateur",
+      "searchPlaceholder": "Rechercher par nom, nom d'utilisateur ou email...",
+      "selectRole": "Sélectionner un rôle",
+      "roleMember": "Membre",
+      "roleMemberDesc": "Peut voir et modifier les tâches",
+      "roleViewer": "Observateur",
+      "roleViewerDesc": "Ne peut que voir le projet",
+      "noUsersFound": "Aucun utilisateur trouvé",
+      "addError": "Échec de l'ajout du membre"
+    },
+    "activityComingSoon": "Activité à venir",
+    "activityDescription": "Le fil d'activité sera bientôt disponible"
   }
 }

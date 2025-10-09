@@ -2,11 +2,26 @@ import { ProjectModel } from '@/models/Project';
 import { Project, CreateProjectRequest } from '@/types';
 
 export class ProjectService {
-  static async getAllProjects(userId: string): Promise<Project[]> {
-    return ProjectModel.findByUser(userId);
+  static async getAllProjects(userId: string): Promise<any[]> {
+    const projects = await ProjectModel.findByUser(userId);
+
+    // Add memberCount and taskCount for each project
+    const projectsWithCounts = await Promise.all(
+      projects.map(async (project) => {
+        const members = await ProjectModel.getMembers(project.id);
+        // TODO: Add task count when tasks are implemented
+        return {
+          ...project,
+          memberCount: members.length,
+          taskCount: 0
+        };
+      })
+    );
+
+    return projectsWithCounts;
   }
 
-  static async getProjectById(id: string, userId: string): Promise<Project | null> {
+  static async getProjectById(id: string, userId: string): Promise<any | null> {
     const project = await ProjectModel.findById(id);
     if (!project) {
       return null;
@@ -17,7 +32,15 @@ export class ProjectService {
       return null;
     }
 
-    return project;
+    // Add memberCount and taskCount
+    const members = await ProjectModel.getMembers(id);
+    // TODO: Add task count when tasks are implemented
+
+    return {
+      ...project,
+      memberCount: members.length,
+      taskCount: 0
+    };
   }
 
   static async createProject(projectData: CreateProjectRequest, ownerId: string): Promise<Project> {
@@ -34,6 +57,9 @@ export class ProjectService {
       isActive: true,
       settings: { ...defaultSettings, ...projectData.settings }
     });
+
+    // Add the creator as a member with 'owner' role
+    await ProjectModel.addMember(project.id, ownerId, 'owner');
 
     return project;
   }

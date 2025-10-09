@@ -175,7 +175,7 @@ export class ProjectModel {
   static async getMembers(projectId: string): Promise<ProjectMember[]> {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT pm.*, u.username, u.firstName, u.lastName, u.email
+        SELECT pm.*, u.username, u.firstName, u.lastName, u.email, u.profilePicture
         FROM project_members pm
         JOIN users u ON pm.userId = u.id
         WHERE pm.projectId = ?
@@ -191,7 +191,12 @@ export class ProjectModel {
             projectId: row.projectId,
             userId: row.userId,
             role: row.role,
-            joinedAt: new Date(row.joinedAt)
+            joinedAt: new Date(row.joinedAt),
+            username: row.username,
+            firstName: row.firstName,
+            lastName: row.lastName,
+            email: row.email,
+            profilePicture: row.profilePicture
           })));
         }
       });

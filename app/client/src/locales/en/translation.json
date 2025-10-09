@@ -300,6 +300,44 @@
         "descriptionTooLong": "Description is too long (max 500 characters)",
         "saveFailed": "Failed to save project"
       }
-    }
+    },
+    "confirmArchive": "Are you sure you want to archive this project?"
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "Overview",
+      "tasks": "Tasks",
+      "members": "Members",
+      "activity": "Activity"
+    },
+    "noDescription": "No description",
+    "archive": "Archive",
+    "stats": {
+      "totalTasks": "Total Tasks",
+      "teamMembers": "Team Members",
+      "boardType": "Board Type"
+    },
+    "tasksComingSoon": "Tasks Coming Soon",
+    "tasksDescription": "Task management will be available soon",
+    "members": {
+      "title": "Team Members",
+      "addMember": "Add Member",
+      "noMembers": "No members yet",
+      "noMembersDescription": "Add members to collaborate on this project",
+      "changeRole": "Change Role",
+      "removeMember": "Remove",
+      "addMemberTitle": "Add Team Member",
+      "searchUser": "Search User",
+      "searchPlaceholder": "Search by name, username or email...",
+      "selectRole": "Select Role",
+      "roleMember": "Member",
+      "roleMemberDesc": "Can view and edit tasks",
+      "roleViewer": "Viewer",
+      "roleViewerDesc": "Can only view project",
+      "noUsersFound": "No users found",
+      "addError": "Failed to add member"
+    },
+    "activityComingSoon": "Activity Coming Soon",
+    "activityDescription": "Activity feed will be available soon"
   }
 }

@@ -11,6 +11,7 @@ import Users from './pages/Admin/Users';
 import Roles from './pages/Admin/Roles';
 import Settings from './pages/Settings/Settings';
 import Projects from './pages/Projects/Projects';
+import ProjectDetail from './pages/ProjectDetail/ProjectDetail';
 import { useTranslation } from 'react-i18next';
 
 const AppRoutes: React.FC = () => {
@@ -50,6 +51,7 @@ const AppRoutes: React.FC = () => {
               <Routes>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/projects" element={<Projects />} />
+                <Route path="/projects/:projectId" element={<ProjectDetail />} />
                 <Route path="/tasks" element={<div className="p-8"><h1 className="text-2xl font-bold">Tâches</h1></div>} />
                 <Route path="/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Équipe</h1></div>} />
                 <Route path="/admin/users" element={<Users />} />
