@@ -5,6 +5,7 @@ import { apiService } from '../../services/api';
 import ProfilePictureCrop from '../../components/ProfilePictureCrop/ProfilePictureCrop';
 import { useTheme } from '../../contexts/ThemeContext';
 import { themes, ThemeType } from '../../themes';
+import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
@@ -20,7 +21,7 @@ interface UserProfile {
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
-  const { themeType, setTheme } = useTheme();
+  const { theme, themeType, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | '2fa' | 'appearance'>('profile');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -204,81 +205,151 @@ const Settings: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">{t('common.loading')}</p>
+      <ThemeLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div
+              className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+              style={{ borderColor: theme.colors.accent, borderTopColor: 'transparent' }}
+            ></div>
+            <p style={{ color: theme.colors.textSecondary }}>{t('common.loading')}</p>
+          </div>
         </div>
-      </div>
+      </ThemeLayout>
     );
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-slate-800 mb-8">{t('settings.title')}</h1>
+    <ThemeLayout className="p-8">
+      <h1 className="text-3xl font-bold mb-8" style={{ color: theme.colors.textPrimary }}>{t('settings.title')}</h1>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center justify-between">
+        <div
+          className="mb-4 p-4 border rounded-lg flex items-center justify-between"
+          style={{
+            backgroundColor: `${theme.colors.error}10`,
+            borderColor: theme.colors.error,
+            color: theme.colors.error,
+          }}
+        >
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-red-700 hover:text-red-900">
+          <button
+            onClick={() => setError(null)}
+            style={{ color: theme.colors.error }}
+            className="hover:opacity-70 transition-opacity"
+          >
             <X size={18} />
           </button>
         </div>
       )}
 
       {success && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center justify-between">
+        <div
+          className="mb-4 p-4 border rounded-lg flex items-center justify-between"
+          style={{
+            backgroundColor: `${theme.colors.success}10`,
+            borderColor: theme.colors.success,
+            color: theme.colors.success,
+          }}
+        >
           <span>{success}</span>
-          <button onClick={() => setSuccess(null)} className="text-green-700 hover:text-green-900">
+          <button
+            onClick={() => setSuccess(null)}
+            style={{ color: theme.colors.success }}
+            className="hover:opacity-70 transition-opacity"
+          >
             <X size={18} />
           </button>
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div
+        className="rounded-xl shadow-lg overflow-hidden"
+        style={{ backgroundColor: theme.colors.surface }}
+      >
         {/* Tabs */}
-        <div className="border-b border-slate-200">
+        <div className="border-b" style={{ borderColor: theme.colors.surfaceBorder }}>
           <div className="flex">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'profile'
-                  ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-slate-600 hover:text-slate-800'
-              }`}
+              className="flex items-center gap-2 px-6 py-4 font-medium transition-colors"
+              style={{
+                borderBottom: activeTab === 'profile' ? `2px solid ${theme.colors.accent}` : 'none',
+                color: activeTab === 'profile' ? theme.colors.accent : theme.colors.textSecondary,
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== 'profile') {
+                  e.currentTarget.style.color = theme.colors.textPrimary;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== 'profile') {
+                  e.currentTarget.style.color = theme.colors.textSecondary;
+                }
+              }}
             >
               <User size={20} />
               {t('settings.profileTab')}
             </button>
             <button
               onClick={() => setActiveTab('security')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'security'
-                  ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-slate-600 hover:text-slate-800'
-              }`}
+              className="flex items-center gap-2 px-6 py-4 font-medium transition-colors"
+              style={{
+                borderBottom: activeTab === 'security' ? `2px solid ${theme.colors.accent}` : 'none',
+                color: activeTab === 'security' ? theme.colors.accent : theme.colors.textSecondary,
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== 'security') {
+                  e.currentTarget.style.color = theme.colors.textPrimary;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== 'security') {
+                  e.currentTarget.style.color = theme.colors.textSecondary;
+                }
+              }}
             >
               <Lock size={20} />
               {t('settings.securityTab')}
             </button>
             <button
               onClick={() => setActiveTab('2fa')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === '2fa'
-                  ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-slate-600 hover:text-slate-800'
-              }`}
+              className="flex items-center gap-2 px-6 py-4 font-medium transition-colors"
+              style={{
+                borderBottom: activeTab === '2fa' ? `2px solid ${theme.colors.accent}` : 'none',
+                color: activeTab === '2fa' ? theme.colors.accent : theme.colors.textSecondary,
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== '2fa') {
+                  e.currentTarget.style.color = theme.colors.textPrimary;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== '2fa') {
+                  e.currentTarget.style.color = theme.colors.textSecondary;
+                }
+              }}
             >
               <Shield size={20} />
               {t('settings.2faTab')}
             </button>
             <button
               onClick={() => setActiveTab('appearance')}
-              className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === 'appearance'
-                  ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-slate-600 hover:text-slate-800'
-              }`}
+              className="flex items-center gap-2 px-6 py-4 font-medium transition-colors"
+              style={{
+                borderBottom: activeTab === 'appearance' ? `2px solid ${theme.colors.accent}` : 'none',
+                color: activeTab === 'appearance' ? theme.colors.accent : theme.colors.textSecondary,
+              }}
+              onMouseEnter={(e) => {
+                if (activeTab !== 'appearance') {
+                  e.currentTarget.style.color = theme.colors.textPrimary;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (activeTab !== 'appearance') {
+                  e.currentTarget.style.color = theme.colors.textSecondary;
+                }
+              }}
             >
               <Palette size={20} />
               {t('settings.appearanceTab')}
@@ -293,27 +364,40 @@ const Settings: React.FC = () => {
             <div className="space-y-8">
               {/* Profile Picture */}
               <div>
-                <h2 className="text-xl font-semibold text-slate-800 mb-4">{t('settings.profilePicture')}</h2>
+                <h2 className="text-xl font-semibold mb-4" style={{ color: theme.colors.textPrimary }}>{t('settings.profilePicture')}</h2>
                 <div className="flex items-center gap-6">
                   <div className="relative">
                     {profile?.profilePicture ? (
                       <img
                         src={`${API_BASE_URL}/${profile.profilePicture}`}
                         alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover border-2 border-slate-200"
+                        className="w-24 h-24 rounded-full object-cover border-2"
+                        style={{ borderColor: theme.colors.surfaceBorder }}
                         onError={(e) => {
                           console.error('Image load error:', e);
                           console.log('Attempted URL:', `${API_BASE_URL}/${profile.profilePicture}`);
                         }}
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-full bg-slate-200 flex items-center justify-center">
-                        <User size={48} className="text-slate-400" />
+                      <div
+                        className="w-24 h-24 rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: theme.colors.surfaceHover }}
+                      >
+                        <User size={48} style={{ color: theme.colors.textTertiary }} />
                       </div>
                     )}
                   </div>
                   <div className="flex gap-3">
-                    <label className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition-colors flex items-center gap-2">
+                    <label
+                      className="px-4 py-2 rounded-lg cursor-pointer transition-colors flex items-center gap-2"
+                      style={{ backgroundColor: theme.colors.accent, color: theme.colors.primary }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.9';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                      }}
+                    >
                       <Camera size={18} />
                       {t('settings.uploadPicture')}
                       <input
@@ -326,7 +410,14 @@ const Settings: React.FC = () => {
                     {profile?.profilePicture && (
                       <button
                         onClick={handleDeleteProfilePicture}
-                        className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        className="px-4 py-2 rounded-lg transition-colors"
+                        style={{ backgroundColor: theme.colors.error, color: theme.colors.primary }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.opacity = '0.9';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.opacity = '1';
+                        }}
                       >
                         {t('settings.deletePicture')}
                       </button>
@@ -337,57 +428,95 @@ const Settings: React.FC = () => {
 
               {/* Profile Information */}
               <form onSubmit={handleUpdateProfile} className="space-y-6">
-                <h2 className="text-xl font-semibold text-slate-800">{t('settings.profileInformation')}</h2>
+                <h2 className="text-xl font-semibold" style={{ color: theme.colors.textPrimary }}>{t('settings.profileInformation')}</h2>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                     {t('settings.email')}
                   </label>
                   <input
                     type="email"
                     value={profile?.email || ''}
                     disabled
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
+                    className="w-full px-4 py-2 border rounded-lg cursor-not-allowed"
+                    style={{
+                      borderColor: theme.colors.surfaceBorder,
+                      backgroundColor: theme.colors.surfaceHover,
+                      color: theme.colors.textTertiary
+                    }}
                   />
-                  <p className="mt-1 text-sm text-slate-500">{t('settings.emailCannotBeChanged')}</p>
+                  <p className="mt-1 text-sm" style={{ color: theme.colors.textTertiary }}>{t('settings.emailCannotBeChanged')}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                     {t('settings.username')}
                   </label>
                   <input
                     type="text"
                     value={profileForm.username}
                     onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                    style={{
+                      borderColor: theme.colors.surfaceBorder,
+                      backgroundColor: theme.colors.surface,
+                      color: theme.colors.textPrimary
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.outline = 'none';
+                    }}
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('settings.firstName')}
                     </label>
                     <input
                       type="text"
                       value={profileForm.firstName}
                       onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                      style={{
+                        borderColor: theme.colors.surfaceBorder,
+                        backgroundColor: theme.colors.surface,
+                        color: theme.colors.textPrimary
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                      }}
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('settings.lastName')}
                     </label>
                     <input
                       type="text"
                       value={profileForm.lastName}
                       onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                      style={{
+                        borderColor: theme.colors.surfaceBorder,
+                        backgroundColor: theme.colors.surface,
+                        color: theme.colors.textPrimary
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                      }}
                       required
                     />
                   </div>
@@ -395,7 +524,14 @@ const Settings: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="px-6 py-2 rounded-lg transition-colors"
+                  style={{ backgroundColor: theme.colors.accent, color: theme.colors.primary }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.9';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
                 >
                   {t('settings.saveChanges')}
                 </button>
@@ -406,44 +542,77 @@ const Settings: React.FC = () => {
           {/* Security Tab */}
           {activeTab === 'security' && (
             <form onSubmit={handleChangePassword} className="space-y-6 max-w-md">
-              <h2 className="text-xl font-semibold text-slate-800">{t('settings.changePassword')}</h2>
+              <h2 className="text-xl font-semibold" style={{ color: theme.colors.textPrimary }}>{t('settings.changePassword')}</h2>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                   {t('settings.currentPassword')}
                 </label>
                 <input
                   type="password"
                   value={passwordForm.currentPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                  style={{
+                    borderColor: theme.colors.surfaceBorder,
+                    backgroundColor: theme.colors.surface,
+                    color: theme.colors.textPrimary
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                   {t('settings.newPassword')}
                 </label>
                 <input
                   type="password"
                   value={passwordForm.newPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                  style={{
+                    borderColor: theme.colors.surfaceBorder,
+                    backgroundColor: theme.colors.surface,
+                    color: theme.colors.textPrimary
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
                   required
                   minLength={6}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                   {t('settings.confirmPassword')}
                 </label>
                 <input
                   type="password"
                   value={passwordForm.confirmPassword}
                   onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                  style={{
+                    borderColor: theme.colors.surfaceBorder,
+                    backgroundColor: theme.colors.surface,
+                    color: theme.colors.textPrimary
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
                   required
                   minLength={6}
                 />
@@ -451,7 +620,14 @@ const Settings: React.FC = () => {
 
               <button
                 type="submit"
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-6 py-2 rounded-lg transition-colors"
+                style={{ backgroundColor: theme.colors.accent, color: theme.colors.primary }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = '0.9';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.opacity = '1';
+                }}
               >
                 {t('settings.updatePassword')}
               </button>
@@ -461,35 +637,53 @@ const Settings: React.FC = () => {
           {/* 2FA Tab */}
           {activeTab === '2fa' && (
             <div className="space-y-6 max-w-md">
-              <h2 className="text-xl font-semibold text-slate-800">{t('settings.twoFactorAuth')}</h2>
+              <h2 className="text-xl font-semibold" style={{ color: theme.colors.textPrimary }}>{t('settings.twoFactorAuth')}</h2>
 
               {!is2FAEnabled ? (
                 <>
-                  <p className="text-slate-600">{t('settings.2faDescription')}</p>
+                  <p style={{ color: theme.colors.textSecondary }}>{t('settings.2faDescription')}</p>
 
                   {!qrCode ? (
                     <button
                       onClick={handleSetup2FA}
-                      className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      className="px-6 py-2 rounded-lg transition-colors"
+                      style={{ backgroundColor: theme.colors.accent, color: theme.colors.primary }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '0.9';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                      }}
                     >
                       {t('settings.enable2fa')}
                     </button>
                   ) : (
                     <form onSubmit={handleVerify2FA} className="space-y-4">
-                      <div className="p-4 bg-slate-50 rounded-lg">
-                        <p className="text-sm text-slate-600 mb-4">{t('settings.scanQRCode')}</p>
+                      <div className="p-4 rounded-lg" style={{ backgroundColor: theme.colors.surfaceHover }}>
+                        <p className="text-sm mb-4" style={{ color: theme.colors.textSecondary }}>{t('settings.scanQRCode')}</p>
                         <img src={qrCode} alt="QR Code" className="mx-auto" />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                           {t('settings.verificationCode')}
                         </label>
                         <input
                           type="text"
                           value={twoFactorToken}
                           onChange={(e) => setTwoFactorToken(e.target.value)}
-                          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                          style={{
+                            borderColor: theme.colors.surfaceBorder,
+                            backgroundColor: theme.colors.surface,
+                            color: theme.colors.textPrimary
+                          }}
+                          onFocus={(e) => {
+                            e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.outline = 'none';
+                          }}
                           placeholder="000000"
                           maxLength={6}
                           required
@@ -499,7 +693,14 @@ const Settings: React.FC = () => {
                       <div className="flex gap-3">
                         <button
                           type="submit"
-                          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                          className="px-6 py-2 rounded-lg transition-colors"
+                          style={{ backgroundColor: theme.colors.accent, color: theme.colors.primary }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity = '0.9';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                          }}
                         >
                           {t('settings.verify')}
                         </button>
@@ -509,7 +710,14 @@ const Settings: React.FC = () => {
                             setQrCode(null);
                             setTwoFactorToken('');
                           }}
-                          className="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors"
+                          className="px-6 py-2 rounded-lg transition-colors"
+                          style={{ backgroundColor: theme.colors.surfaceHover, color: theme.colors.textSecondary }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity = '0.9';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                          }}
                         >
                           {t('common.cancel')}
                         </button>
@@ -519,19 +727,30 @@ const Settings: React.FC = () => {
                 </>
               ) : (
                 <form onSubmit={handleDisable2FA} className="space-y-4">
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-green-700">{t('settings.2faCurrentlyEnabled')}</p>
+                  <div className="p-4 border rounded-lg" style={{ backgroundColor: `${theme.colors.success}10`, borderColor: theme.colors.success }}>
+                    <p style={{ color: theme.colors.success }}>{t('settings.2faCurrentlyEnabled')}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textSecondary }}>
                       {t('settings.verificationCode')}
                     </label>
                     <input
                       type="text"
                       value={twoFactorToken}
                       onChange={(e) => setTwoFactorToken(e.target.value)}
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:border-transparent"
+                      style={{
+                        borderColor: theme.colors.surfaceBorder,
+                        backgroundColor: theme.colors.surface,
+                        color: theme.colors.textPrimary
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = `2px solid ${theme.colors.accent}`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                      }}
                       placeholder="000000"
                       maxLength={6}
                       required
@@ -540,7 +759,14 @@ const Settings: React.FC = () => {
 
                   <button
                     type="submit"
-                    className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    className="px-6 py-2 rounded-lg transition-colors"
+                    style={{ backgroundColor: theme.colors.error, color: theme.colors.primary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.9';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                    }}
                   >
                     {t('settings.disable2fa')}
                   </button>
@@ -553,20 +779,20 @@ const Settings: React.FC = () => {
           {activeTab === 'appearance' && (
             <div className="space-y-8">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2">{t('settings.theme')}</h2>
-                <p className="text-slate-600 mb-6">{t('settings.themeDescription')}</p>
+                <h2 className="text-2xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>{t('settings.theme')}</h2>
+                <p className="mb-6" style={{ color: theme.colors.textSecondary }}>{t('settings.themeDescription')}</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {(Object.keys(themes) as ThemeType[]).map((theme) => {
-                    const themeConfig = themes[theme];
-                    const isSelected = themeType === theme;
+                  {(Object.keys(themes) as ThemeType[]).map((themeKey) => {
+                    const themeConfig = themes[themeKey];
+                    const isSelected = themeType === themeKey;
 
                     return (
                       <button
-                        key={theme}
+                        key={themeKey}
                         onClick={async () => {
                           try {
-                            await setTheme(theme);
+                            await setTheme(themeKey);
                             setSuccess(t('settings.themeUpdated'));
                             setTimeout(() => setSuccess(null), 3000);
                           } catch (error) {
@@ -574,11 +800,25 @@ const Settings: React.FC = () => {
                             setTimeout(() => setError(null), 3000);
                           }
                         }}
-                        className={`relative p-6 rounded-lg border-2 transition-all ${
-                          isSelected
-                            ? 'border-blue-500 shadow-lg scale-105'
-                            : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
-                        }`}
+                        className="relative p-6 rounded-lg border-2 transition-all"
+                        style={{
+                          borderColor: isSelected ? theme.colors.accent : theme.colors.surfaceBorder,
+                          backgroundColor: theme.colors.surface,
+                          boxShadow: isSelected ? '0 10px 15px -3px rgba(0, 0, 0, 0.1)' : 'none',
+                          transform: isSelected ? 'scale(1.05)' : 'scale(1)'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.borderColor = theme.colors.textTertiary;
+                            e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.borderColor = theme.colors.surfaceBorder;
+                            e.currentTarget.style.boxShadow = 'none';
+                          }
+                        }}
                       >
                         {/* Theme Preview */}
                         <div className="mb-4">
@@ -605,15 +845,19 @@ const Settings: React.FC = () => {
                         </div>
 
                         {/* Theme Name */}
-                        <p className="font-semibold text-slate-900">
+                        <p className="font-semibold" style={{ color: theme.colors.textPrimary }}>
                           {t(`settings.theme${themeConfig.name.replace(/ /g, '')}`)}
                         </p>
 
                         {/* Selected Indicator */}
                         {isSelected && (
-                          <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <div
+                            className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: theme.colors.accent }}
+                          >
                             <svg
-                              className="w-4 h-4 text-white"
+                              className="w-4 h-4"
+                              style={{ color: theme.colors.primary }}
                               fill="none"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -643,7 +887,7 @@ const Settings: React.FC = () => {
           onCancel={handleCropCancel}
         />
       )}
-    </div>
+    </ThemeLayout>
   );
 };
 

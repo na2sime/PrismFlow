@@ -82,7 +82,8 @@ export class AuthService {
       isActive: true,
       profilePicture: null,
       twoFactorSecret: null,
-      twoFactorEnabled: false
+      twoFactorEnabled: false,
+      theme: 'light',
     });
 
     const userWithoutPassword = { ...newUser };

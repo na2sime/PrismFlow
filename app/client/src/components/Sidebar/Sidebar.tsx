@@ -11,13 +11,13 @@ import {
   ChevronRight,
   Shield,
   ChevronDown,
-  ArrowLeft,
-  User
+  ArrowLeft
 } from 'lucide-react';
 import { apiService } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Languages } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
@@ -29,6 +29,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const { theme } = useTheme();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
@@ -117,23 +118,39 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   return (
     <div
-      className={`h-screen bg-white border-r border-slate-200 flex flex-col transition-all duration-300 ${
+      className={`h-screen border-r flex flex-col transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
+      style={{
+        backgroundColor: theme.colors.surface,
+        borderColor: theme.colors.surfaceBorder,
+      }}
     >
       {/* Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200">
+      <div
+        className="h-16 flex items-center justify-between px-4 border-b"
+        style={{ borderColor: theme.colors.surfaceBorder }}
+      >
         {!isCollapsed && (
-          <h1 className="text-xl font-bold text-slate-900">PrismFlow</h1>
+          <h1 className="text-xl font-bold" style={{ color: theme.colors.textPrimary }}>
+            PrismFlow
+          </h1>
         )}
         <button
           onClick={onToggle}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-2 rounded-lg transition-colors"
+          style={{ backgroundColor: 'transparent' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
         >
           {isCollapsed ? (
-            <ChevronRight className="w-5 h-5 text-slate-600" />
+            <ChevronRight className="w-5 h-5" style={{ color: theme.colors.textSecondary }} />
           ) : (
-            <ChevronLeft className="w-5 h-5 text-slate-600" />
+            <ChevronLeft className="w-5 h-5" style={{ color: theme.colors.textSecondary }} />
           )}
         </button>
       </div>
@@ -145,7 +162,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             {/* Admin Mode Header */}
             <button
               onClick={handleAdminToggle}
-              className="w-full flex items-center gap-3 px-3 py-2.5 mb-4 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 mb-4 rounded-lg transition-colors"
+              style={{
+                backgroundColor: `${theme.colors.info}20`,
+                color: theme.colors.info,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = `${theme.colors.info}30`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = `${theme.colors.info}20`;
+              }}
             >
               <ArrowLeft className="w-5 h-5 flex-shrink-0" />
               {!isCollapsed && <span className="font-medium">{t('sidebar.normalMode')}</span>}
@@ -153,7 +180,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
             {!isCollapsed && (
               <div className="px-3 pb-2">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wider"
+                  style={{ color: theme.colors.textTertiary }}
+                >
                   {t('sidebar.administration')}
                 </p>
               </div>
@@ -163,13 +193,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-purple-50 text-purple-600'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`
-                }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive ? `${theme.colors.info}20` : 'transparent',
+                  color: isActive ? theme.colors.info : theme.colors.textSecondary,
+                })}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const isActive = e.currentTarget.getAttribute('aria-current') === 'page';
+                  e.currentTarget.style.backgroundColor = isActive ? `${theme.colors.info}20` : 'transparent';
+                }}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 {!isCollapsed && <span className="font-medium">{item.label}</span>}
@@ -183,13 +220,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`
-                }
+                style={({ isActive }) => ({
+                  backgroundColor: isActive ? `${theme.colors.accent}20` : 'transparent',
+                  color: isActive ? theme.colors.accent : theme.colors.textSecondary,
+                })}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.classList.contains('active')) {
+                    e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const isActive = e.currentTarget.getAttribute('aria-current') === 'page';
+                  e.currentTarget.style.backgroundColor = isActive ? `${theme.colors.accent}20` : 'transparent';
+                }}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
                 {!isCollapsed && <span className="font-medium">{item.label}</span>}
@@ -200,14 +244,27 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       </nav>
 
       {/* User Section */}
-      <div className="p-3 border-t border-slate-200 relative">
+      <div
+        className="p-3 border-t relative"
+        style={{ borderColor: theme.colors.surfaceBorder }}
+      >
         {/* Admin Mode Toggle Button */}
         {isAdmin && !isAdminMode && (
           <button
             onClick={handleAdminToggle}
-            className={`w-full mb-2 flex items-center gap-3 px-3 py-2.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors ${
+            className={`w-full mb-2 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
               isCollapsed ? 'justify-center' : ''
             }`}
+            style={{
+              backgroundColor: `${theme.colors.info}20`,
+              color: theme.colors.info,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${theme.colors.info}30`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = `${theme.colors.info}20`;
+            }}
           >
             <Shield className="w-5 h-5 flex-shrink-0" />
             {!isCollapsed && <span className="font-medium">{t('sidebar.administration')}</span>}
@@ -218,9 +275,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors ${
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
               isCollapsed ? 'justify-center' : ''
             }`}
+            style={{ backgroundColor: 'transparent' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
             {user.profilePicture ? (
               <img
@@ -229,19 +293,36 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 className="w-8 h-8 rounded-full object-cover flex-shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center font-semibold flex-shrink-0"
+                style={{
+                  backgroundColor: theme.colors.accent,
+                  color: theme.colors.primary,
+                }}
+              >
                 {user.firstName?.[0]}{user.lastName?.[0]}
               </div>
             )}
             {!isCollapsed && (
               <>
                 <div className="flex-1 min-w-0 text-left">
-                  <p className="text-sm font-medium text-slate-900 truncate">
+                  <p
+                    className="text-sm font-medium truncate"
+                    style={{ color: theme.colors.textPrimary }}
+                  >
                     {user.firstName} {user.lastName}
                   </p>
-                  <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                  <p
+                    className="text-xs truncate"
+                    style={{ color: theme.colors.textSecondary }}
+                  >
+                    {user.email}
+                  </p>
                 </div>
-                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform ${showUserMenu ? 'rotate-180' : ''}`}
+                  style={{ color: theme.colors.textTertiary }}
+                />
               </>
             )}
           </button>
@@ -253,16 +334,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className={`absolute bottom-full left-3 right-3 mb-2 bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden ${
+                className={`absolute bottom-full left-3 right-3 mb-2 rounded-lg shadow-lg border overflow-hidden ${
                   isCollapsed ? 'left-auto right-auto w-48' : ''
                 }`}
+                style={{
+                  backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.surfaceBorder,
+                }}
               >
                 <button
                   onClick={toggleLanguage}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 transition-colors text-left"
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: theme.colors.textSecondary,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
-                  <Languages className="w-4 h-4 text-slate-600" />
-                  <span className="text-sm font-medium text-slate-700">
+                  <Languages className="w-4 h-4" />
+                  <span className="text-sm font-medium">
                     {i18n.language === 'fr' ? '🇬🇧 English' : '🇫🇷 Français'}
                   </span>
                 </button>
@@ -271,20 +366,42 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                     setShowUserMenu(false);
                     navigate('/settings');
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left border-t border-slate-200"
+                  className="w-full flex items-center gap-3 px-4 py-3 transition-colors text-left border-t"
+                  style={{
+                    backgroundColor: 'transparent',
+                    borderColor: theme.colors.surfaceBorder,
+                    color: theme.colors.textSecondary,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = theme.colors.surfaceHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
-                  <Settings className="w-4 h-4 text-slate-600" />
-                  <span className="text-sm font-medium text-slate-700">{t('sidebar.settings')}</span>
+                  <Settings className="w-4 h-4" />
+                  <span className="text-sm font-medium">{t('sidebar.settings')}</span>
                 </button>
                 <button
                   onClick={() => {
                     setShowUserMenu(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left border-t border-slate-200"
+                  className="w-full flex items-center gap-3 px-4 py-3 transition-colors text-left border-t"
+                  style={{
+                    backgroundColor: 'transparent',
+                    borderColor: theme.colors.surfaceBorder,
+                    color: theme.colors.error,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = `${theme.colors.error}10`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
-                  <LogOut className="w-4 h-4 text-red-600" />
-                  <span className="text-sm font-medium text-red-600">{t('auth.logout')}</span>
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm font-medium">{t('auth.logout')}</span>
                 </button>
               </motion.div>
             )}

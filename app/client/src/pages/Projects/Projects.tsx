@@ -134,8 +134,8 @@ const Projects: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="text-4xl font-bold text-white mb-2">{t('projects.title')}</h1>
-        <p className="text-gray-300">{t('projects.subtitle')}</p>
+        <h1 className="text-4xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>{t('projects.title')}</h1>
+        <p style={{ color: theme.colors.textSecondary }}>{t('projects.subtitle')}</p>
       </motion.div>
 
       {/* Stats */}
@@ -185,24 +185,40 @@ const Projects: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <IconSearch
+              className="absolute left-3 top-1/2 -translate-y-1/2"
+              style={{ color: theme.colors.textTertiary }}
+            />
             <input
               type="text"
               placeholder={t('projects.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition"
+              style={{
+                backgroundColor: theme.colors.surfaceHover,
+                borderColor: theme.colors.surfaceBorder,
+                color: theme.colors.textPrimary,
+              }}
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-4">
             <div className="relative">
-              <IconFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <IconFilter
+                className="absolute left-3 top-1/2 -translate-y-1/2"
+                style={{ color: theme.colors.textTertiary }}
+              />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="pl-10 pr-8 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+                className="pl-10 pr-8 py-2 border rounded-lg focus:outline-none focus:ring-2 appearance-none cursor-pointer transition"
+                style={{
+                  backgroundColor: theme.colors.surfaceHover,
+                  borderColor: theme.colors.surfaceBorder,
+                  color: theme.colors.textPrimary,
+                }}
               >
                 <option value="all">{t('projects.filters.all')}</option>
                 <option value="active">{t('projects.filters.active')}</option>
@@ -212,20 +228,30 @@ const Projects: React.FC = () => {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex bg-white/5 rounded-lg border border-white/10">
+            <div
+              className="flex rounded-lg border"
+              style={{
+                backgroundColor: theme.colors.surfaceHover,
+                borderColor: theme.colors.surfaceBorder,
+              }}
+            >
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-l-lg transition-colors ${
-                  viewMode === 'grid' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white'
-                }`}
+                className="p-2 rounded-l-lg transition-colors"
+                style={{
+                  backgroundColor: viewMode === 'grid' ? theme.colors.accent : 'transparent',
+                  color: viewMode === 'grid' ? theme.colors.primary : theme.colors.textTertiary,
+                }}
               >
                 <IconGrid size={20} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-r-lg transition-colors ${
-                  viewMode === 'list' ? 'bg-blue-500 text-white' : 'text-gray-400 hover:text-white'
-                }`}
+                className="p-2 rounded-r-lg transition-colors"
+                style={{
+                  backgroundColor: viewMode === 'list' ? theme.colors.accent : 'transparent',
+                  color: viewMode === 'list' ? theme.colors.primary : theme.colors.textTertiary,
+                }}
               >
                 <IconList size={20} />
               </button>
@@ -234,7 +260,17 @@ const Projects: React.FC = () => {
             {/* Create Button */}
             <button
               onClick={handleCreateProject}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+              style={{
+                backgroundColor: theme.colors.accent,
+                color: theme.colors.primary,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = theme.colors.accentHover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = theme.colors.accent;
+              }}
             >
               <IconPlus />
               {t('projects.create')}
@@ -246,7 +282,10 @@ const Projects: React.FC = () => {
       {/* Projects Grid/List */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2"
+            style={{ borderColor: theme.colors.accent }}
+          ></div>
         </div>
       ) : filteredProjects.length === 0 ? (
         <motion.div
@@ -254,7 +293,7 @@ const Projects: React.FC = () => {
           animate={{ opacity: 1 }}
           className="text-center py-20"
         >
-          <p className="text-gray-400 text-lg mb-4">
+          <p className="text-lg mb-4" style={{ color: theme.colors.textSecondary }}>
             {searchQuery || statusFilter !== 'all'
               ? t('projects.noResults')
               : t('projects.empty')}
@@ -262,7 +301,17 @@ const Projects: React.FC = () => {
           {!searchQuery && statusFilter === 'all' && (
             <button
               onClick={handleCreateProject}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+              className="px-6 py-3 rounded-lg transition-colors"
+              style={{
+                backgroundColor: theme.colors.accent,
+                color: theme.colors.primary,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = theme.colors.accentHover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = theme.colors.accent;
+              }}
             >
               {t('projects.createFirst')}
             </button>
