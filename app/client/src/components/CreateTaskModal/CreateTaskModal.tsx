@@ -163,7 +163,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="backdrop-blur-xl rounded-2xl p-6 w-full max-w-4xl border shadow-2xl max-h-[90vh] overflow-y-auto"
+            className="backdrop-blur-xl rounded-2xl p-6 w-full max-w-6xl border shadow-2xl"
             style={{
               background: theme.colors.glassBackground,
               borderColor: theme.colors.glassBorder,
@@ -195,9 +195,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
             <form onSubmit={handleSubmit}>
               {/* Two-column layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* LEFT COLUMN - Main content */}
-                <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* LEFT COLUMN - Main content (3/4 width) */}
+                <div className="lg:col-span-3 space-y-4">
                   {/* Title */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
@@ -372,7 +372,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                         ? t('tasks.descriptionMarkdownPlaceholder') || 'Use Markdown syntax...\n\n**Bold** *Italic* `code`\n- [ ] Checklist'
                         : t('tasks.descriptionPlaceholder') || 'Enter task description...'
                     }
-                    rows={6}
+                    rows={12}
                     className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 resize-none transition-all"
                     style={{
                       backgroundColor: theme.colors.surfaceHover,
@@ -417,22 +417,38 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     {React.createElement(FiFlag as any, { className: "w-4 h-4 inline mr-1" })}
                     Priority
                   </label>
-                  <select
-                    value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition-all"
-                    style={{
-                      backgroundColor: theme.colors.surfaceHover,
-                      borderColor: theme.colors.surfaceBorder,
-                      color: theme.colors.textPrimary,
-                    }}
-                  >
+                  <div className="space-y-2">
                     {priorityOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
+                      <label
+                        key={option.value}
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer transition-all"
+                        style={{
+                          backgroundColor: formData.priority === option.value ? `${option.color}15` : theme.colors.surfaceHover,
+                          borderColor: formData.priority === option.value ? option.color : theme.colors.surfaceBorder,
+                          borderWidth: '2px',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="priority"
+                          value={option.value}
+                          checked={formData.priority === option.value}
+                          onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                          className="hidden"
+                        />
+                        <div
+                          className="w-4 h-4 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: option.color }}
+                        ></div>
+                        <span
+                          className="text-sm font-medium"
+                          style={{ color: formData.priority === option.value ? option.color : theme.colors.textPrimary }}
+                        >
+                          {option.label}
+                        </span>
+                      </label>
                     ))}
-                  </select>
+                  </div>
                   </div>
 
                   {/* Assignee */}
@@ -506,7 +522,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                   {React.createElement(FiTag as any, { className: "w-4 h-4 inline mr-1" })}
                   {t('tasks.tags')}
                 </label>
-                <div className="flex gap-2 mb-2">
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={tagInput}
@@ -518,7 +534,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                       }
                     }}
                     placeholder={t('tasks.addTag') || 'Add a tag...'}
-                    className="flex-1 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 transition-all"
+                    className="w-full px-3 py-2 text-sm rounded-lg border focus:outline-none focus:ring-2 transition-all"
                     style={{
                       backgroundColor: theme.colors.surfaceHover,
                       borderColor: theme.colors.surfaceBorder,
@@ -528,7 +544,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                   <button
                     type="button"
                     onClick={addTag}
-                    className="px-4 py-2 rounded-lg transition-colors"
+                    className="w-full px-3 py-2 text-sm rounded-lg transition-colors"
                     style={{
                       backgroundColor: theme.colors.accent,
                       color: theme.colors.primary,
