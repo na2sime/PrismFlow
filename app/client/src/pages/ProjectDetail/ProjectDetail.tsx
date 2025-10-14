@@ -22,6 +22,8 @@ import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
 import { useTheme } from '../../contexts/ThemeContext';
 import AddMemberModal from '../../components/AddMemberModal/AddMemberModal';
 import ChangeRoleModal from '../../components/ChangeRoleModal/ChangeRoleModal';
+import TaskList from '../../components/TaskList/TaskList';
+import CreateTaskModal from '../../components/CreateTaskModal/CreateTaskModal';
 
 interface Project {
   id: string;
@@ -72,6 +74,9 @@ const ProjectDetail: React.FC = () => {
   const [isChangeRoleModalOpen, setIsChangeRoleModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ProjectMember | null>(null);
   const [userRole, setUserRole] = useState<'owner' | 'member' | 'viewer' | null>(null);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [loadingTasks, setLoadingTasks] = useState(false);
+  const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
 
   useEffect(() => {
     if (projectId) {
@@ -82,6 +87,9 @@ const ProjectDetail: React.FC = () => {
   useEffect(() => {
     if (projectId && activeTab === 'members') {
       fetchMembers();
+    }
+    if (projectId && activeTab === 'tasks') {
+      fetchTasks();
     }
   }, [projectId, activeTab]);
 
@@ -150,6 +158,43 @@ const ProjectDetail: React.FC = () => {
     } catch (error) {
       console.error('Error removing member:', error);
       alert(t('projectDetail.members.removeError') || 'Failed to remove member');
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      setLoadingTasks(true);
+      const response = await apiService.getTasks(projectId!);
+      setTasks(response.data.tasks || []);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    } finally {
+      setLoadingTasks(false);
+    }
+  };
+
+  const handleTaskClick = (task: any) => {
+    console.log('Task clicked:', task);
+    // TODO: Open task detail modal
+  };
+
+  const handleTaskEdit = (task: any) => {
+    console.log('Task edit:', task);
+    // TODO: Open task edit modal
+  };
+
+  const handleTaskDelete = async (task: any) => {
+    if (!window.confirm(t('tasks.confirmDelete') || `Delete task "${task.title}"?`)) {
+      return;
+    }
+
+    try {
+      await apiService.deleteTask(task.id);
+      fetchTasks();
+      fetchProject(); // Refresh to update task count
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      alert(t('tasks.deleteError') || 'Failed to delete task');
     }
   };
 
@@ -477,20 +522,42 @@ const ProjectDetail: React.FC = () => {
         )}
 
         {activeTab === 'tasks' && (
-          <div
-            className="backdrop-blur-md rounded-lg p-8 border text-center"
-            style={{
-              background: theme.colors.glassBackground,
-              borderColor: theme.colors.glassBorder,
-            }}
-          >
-            {React.createElement(FiCheckSquare as any, { className: "w-16 h-16 mx-auto mb-4", style: { color: theme.colors.textTertiary } })}
-            <h3 className="text-xl font-semibold mb-2" style={{ color: theme.colors.textPrimary }}>
-              {t('projectDetail.tasksComingSoon') || 'Tasks Coming Soon'}
-            </h3>
-            <p style={{ color: theme.colors.textSecondary }}>
-              {t('projectDetail.tasksDescription') || 'Task management will be available soon'}
-            </p>
+          <div>
+            {/* Header with Create Task Button */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold" style={{ color: theme.colors.textPrimary }}>
+                {t('tasks.title') || 'Tasks'} ({tasks.length})
+              </h2>
+              {userRole !== 'viewer' && (
+                <button
+                  onClick={() => setIsCreateTaskModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: theme.colors.accent,
+                    color: theme.colors.primary,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.9';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                >
+                  {React.createElement(FiCheckSquare as any, { className: "w-4 h-4" })}
+                  {t('tasks.createTask') || 'Create Task'}
+                </button>
+              )}
+            </div>
+
+            {/* Task List */}
+            <TaskList
+              tasks={tasks}
+              loading={loadingTasks}
+              onTaskClick={handleTaskClick}
+              onTaskEdit={handleTaskEdit}
+              onTaskDelete={handleTaskDelete}
+              userRole={userRole}
+            />
           </div>
         )}
 
@@ -693,6 +760,15 @@ const ProjectDetail: React.FC = () => {
         member={selectedMember}
         projectId={projectId!}
         onRoleChanged={fetchMembers}
+      />
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        isOpen={isCreateTaskModalOpen}
+        onClose={() => setIsCreateTaskModalOpen(false)}
+        projectId={projectId!}
+        projectMembers={members}
+        onTaskCreated={fetchTasks}
       />
     </ThemeLayout>
   );

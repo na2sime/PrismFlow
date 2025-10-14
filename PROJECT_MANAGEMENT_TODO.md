@@ -36,6 +36,12 @@
 - [ ] Implémenter les commentaires sur les tâches
 - [ ] Ajouter les sous-tâches/checklist
 
+## 📊 Phase 3.5: Statistiques des Membres
+- [ ] Afficher les statistiques par membre (tâches assignées, complétées)
+- [ ] Ajouter des graphiques de performance par membre
+- [ ] Afficher l'activité récente de chaque membre
+- [ ] Calculer et afficher la vélocité par membre (pour Scrum)
+
 ## 📊 Phase 4: Boards (Kanban/Scrum/List)
 - [ ] Créer la page Board pour chaque projet
 - [ ] Implémenter la vue Kanban avec colonnes

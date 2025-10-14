@@ -339,5 +339,43 @@
     },
     "activityComingSoon": "Activity Coming Soon",
     "activityDescription": "Activity feed will be available soon"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "createTask": "Create Task",
+    "titleRequired": "Task title is required",
+    "createError": "Failed to create task",
+    "deleteError": "Failed to delete task",
+    "confirmDelete": "Delete this task?",
+    "noTasks": "No tasks yet",
+    "noTasksDescription": "Create your first task to get started",
+    "titlePlaceholder": "Enter task title...",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter task description...",
+    "descriptionMarkdownPlaceholder": "Use Markdown syntax...\n\n**Bold** *Italic* `code`\n- [ ] Checklist",
+    "noPreview": "*No content to preview*",
+    "edit": "Edit",
+    "preview": "Preview",
+    "status": "Status",
+    "priority": "Priority",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "dueDate": "Due Date",
+    "estimatedHours": "Estimated Hours",
+    "tags": "Tags",
+    "addTag": "Add a tag...",
+    "status": {
+      "todo": "To Do",
+      "inProgress": "In Progress",
+      "review": "Review",
+      "done": "Done",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    }
   }
 }

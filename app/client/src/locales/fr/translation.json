@@ -339,5 +339,43 @@
     },
     "activityComingSoon": "Activité à venir",
     "activityDescription": "Le fil d'activité sera bientôt disponible"
+  },
+  "tasks": {
+    "title": "Tâches",
+    "createTask": "Créer une tâche",
+    "titleRequired": "Le titre de la tâche est requis",
+    "createError": "Échec de la création de la tâche",
+    "deleteError": "Échec de la suppression de la tâche",
+    "confirmDelete": "Supprimer cette tâche ?",
+    "noTasks": "Aucune tâche pour le moment",
+    "noTasksDescription": "Créez votre première tâche pour commencer",
+    "titlePlaceholder": "Entrez le titre de la tâche...",
+    "description": "Description",
+    "descriptionPlaceholder": "Entrez la description de la tâche...",
+    "descriptionMarkdownPlaceholder": "Utilisez la syntaxe Markdown...\n\n**Gras** *Italique* `code`\n- [ ] Liste de contrôle",
+    "noPreview": "*Aucun contenu à prévisualiser*",
+    "edit": "Éditer",
+    "preview": "Aperçu",
+    "status": "Statut",
+    "priority": "Priorité",
+    "assignee": "Assigné à",
+    "unassigned": "Non assigné",
+    "dueDate": "Date d'échéance",
+    "estimatedHours": "Heures estimées",
+    "tags": "Tags",
+    "addTag": "Ajouter un tag...",
+    "status": {
+      "todo": "À faire",
+      "inProgress": "En cours",
+      "review": "En révision",
+      "done": "Terminé",
+      "cancelled": "Annulé"
+    },
+    "priority": {
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé",
+      "critical": "Critique"
+    }
   }
 }
