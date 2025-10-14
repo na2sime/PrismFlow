@@ -203,6 +203,20 @@ export class ProjectModel {
     });
   }
 
+  static async updateMemberRole(projectId: string, userId: string, role: 'member' | 'viewer'): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const query = 'UPDATE project_members SET role = ? WHERE projectId = ? AND userId = ?';
+
+      database.getDb().run(query, [role, projectId, userId], (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
   static async removeMember(projectId: string, userId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const query = 'DELETE FROM project_members WHERE projectId = ? AND userId = ?';

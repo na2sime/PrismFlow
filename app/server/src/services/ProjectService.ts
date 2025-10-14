@@ -102,6 +102,21 @@ export class ProjectService {
     return true;
   }
 
+  static async updateMemberRole(projectId: string, userId: string, memberUserId: string, role: 'member' | 'viewer'): Promise<boolean> {
+    const userRole = await ProjectModel.getUserRole(projectId, userId);
+    if (!userRole || userRole !== 'owner') {
+      return false;
+    }
+
+    const memberRole = await ProjectModel.getUserRole(projectId, memberUserId);
+    if (!memberRole || memberRole === 'owner') {
+      return false;
+    }
+
+    await ProjectModel.updateMemberRole(projectId, memberUserId, role);
+    return true;
+  }
+
   static async removeMember(projectId: string, userId: string, memberUserId: string): Promise<boolean> {
     const userRole = await ProjectModel.getUserRole(projectId, userId);
     if (!userRole || userRole !== 'owner') {

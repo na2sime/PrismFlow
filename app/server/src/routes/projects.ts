@@ -17,6 +17,7 @@ router.delete('/:projectId', requireProjectAccess('admin'), ProjectController.de
 // Project member routes
 router.get('/:projectId/members', requireProjectAccess('read'), ProjectController.getMembers);
 router.post('/:projectId/members', requireProjectAccess('admin'), ProjectController.addMember);
+router.put('/:projectId/members/:userId', requireProjectAccess('admin'), ProjectController.updateMemberRole);
 router.delete('/:projectId/members/:userId', requireProjectAccess('admin'), ProjectController.removeMember);
 
 export default router;

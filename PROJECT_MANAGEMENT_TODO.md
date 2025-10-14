@@ -12,15 +12,15 @@
 - [x] Fix backend: Retourner les données user complètes dans getMembers
 - [x] Fix frontend: Afficher les photos de profil des membres
 
-## 👥 Phase 2: Gestion des Membres du Projet (EN COURS)
+## 👥 Phase 2: Gestion des Membres du Projet ✅
 - [x] Créer le composant de liste des membres
 - [x] Afficher les membres avec leurs rôles et avatars
 - [x] Afficher la photo de profil si disponible
-- [ ] Créer un modal pour ajouter des membres
-- [ ] Implémenter la recherche d'utilisateurs à ajouter
-- [ ] Permettre de modifier le rôle d'un membre (owner, member, viewer)
-- [ ] Permettre de retirer un membre du projet
-- [ ] Ajouter les permissions (seul owner peut gérer les membres)
+- [x] Créer un modal pour ajouter des membres
+- [x] Implémenter la recherche d'utilisateurs à ajouter
+- [x] Permettre de modifier le rôle d'un membre (owner, member, viewer)
+- [x] Permettre de retirer un membre du projet
+- [x] Ajouter les permissions (seul owner peut gérer les membres)
 - [ ] Afficher les statistiques par membre (tâches assignées, complétées)
 
 ## ✅ Phase 3: Gestion des Tâches

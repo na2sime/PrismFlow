@@ -240,6 +240,11 @@ class ApiService {
     return response.data;
   }
 
+  async updateProjectMemberRole(projectId: string, userId: string, role: 'member' | 'viewer') {
+    const response = await this.axiosInstance.put(`/projects/${projectId}/members/${userId}`, { role });
+    return response.data;
+  }
+
   async removeProjectMember(projectId: string, userId: string) {
     const response = await this.axiosInstance.delete(`/projects/${projectId}/members/${userId}`);
     return response.data;

@@ -379,4 +379,56 @@ export class ProjectController {
       });
     }
   }
+
+  static async updateMemberRole(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'User not authenticated'
+        });
+        return;
+      }
+
+      const { projectId, userId } = req.params;
+      const { role } = req.body;
+
+      if (!projectId || !userId) {
+        res.status(400).json({
+          success: false,
+          error: 'Project ID and User ID are required'
+        });
+        return;
+      }
+
+      if (!role || !['member', 'viewer'].includes(role)) {
+        res.status(400).json({
+          success: false,
+          error: 'Valid role is required (member or viewer)'
+        });
+        return;
+      }
+
+      const success = await ProjectService.updateMemberRole(projectId, req.user.id, userId, role);
+
+      if (!success) {
+        res.status(400).json({
+          success: false,
+          error: 'Unable to update member role. You may not have permission or the member does not exist.'
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'Member role updated successfully'
+      });
+    } catch (error) {
+      console.error('Update member role error:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Internal server error'
+      });
+    }
+  }
 }

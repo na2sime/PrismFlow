@@ -21,6 +21,7 @@ import { apiService } from '../../services/api';
 import ThemeLayout from '../../components/ThemeLayout/ThemeLayout';
 import { useTheme } from '../../contexts/ThemeContext';
 import AddMemberModal from '../../components/AddMemberModal/AddMemberModal';
+import ChangeRoleModal from '../../components/ChangeRoleModal/ChangeRoleModal';
 
 interface Project {
   id: string;
@@ -68,6 +69,9 @@ const ProjectDetail: React.FC = () => {
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
+  const [isChangeRoleModalOpen, setIsChangeRoleModalOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<ProjectMember | null>(null);
+  const [userRole, setUserRole] = useState<'owner' | 'member' | 'viewer' | null>(null);
 
   useEffect(() => {
     if (projectId) {
@@ -99,13 +103,53 @@ const ProjectDetail: React.FC = () => {
     try {
       setLoadingMembers(true);
       const response = await apiService.getProjectMembers(projectId!);
-      setMembers(response.data.members || []);
+      const fetchedMembers = response.data.members || [];
+      setMembers(fetchedMembers);
+
+      // Determine current user's role
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      console.log('Current user:', user);
+      console.log('Project owner:', project?.ownerId);
+      console.log('Fetched members:', fetchedMembers);
+
+      const currentUserMember = fetchedMembers.find((m: ProjectMember) => m.userId === user.id);
+      if (currentUserMember) {
+        console.log('User found in members with role:', currentUserMember.role);
+        setUserRole(currentUserMember.role);
+      } else if (project?.ownerId === user.id) {
+        console.log('User is project owner');
+        setUserRole('owner');
+      } else {
+        console.log('User role not determined');
+      }
+
+      console.log('Final userRole:', currentUserMember?.role || (project?.ownerId === user.id ? 'owner' : null));
+
       // Refresh project to update memberCount
       await fetchProject();
     } catch (error) {
       console.error('Error fetching members:', error);
     } finally {
       setLoadingMembers(false);
+    }
+  };
+
+  const handleOpenChangeRoleModal = (member: ProjectMember) => {
+    setSelectedMember(member);
+    setIsChangeRoleModalOpen(true);
+  };
+
+  const handleRemoveMember = async (member: ProjectMember) => {
+    if (!window.confirm(t('projectDetail.members.confirmRemove') || `Remove ${member.firstName} ${member.lastName} from this project?`)) {
+      return;
+    }
+
+    try {
+      await apiService.removeProjectMember(projectId!, member.userId);
+      fetchMembers();
+    } catch (error) {
+      console.error('Error removing member:', error);
+      alert(t('projectDetail.members.removeError') || 'Failed to remove member');
     }
   };
 
@@ -457,23 +501,25 @@ const ProjectDetail: React.FC = () => {
               <h2 className="text-2xl font-bold" style={{ color: theme.colors.textPrimary }}>
                 {t('projectDetail.members.title') || 'Team Members'} ({members.length})
               </h2>
-              <button
-                onClick={() => setIsAddMemberModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
-                style={{
-                  backgroundColor: theme.colors.accent,
-                  color: theme.colors.primary,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = '0.9';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = '1';
-                }}
-              >
-                {React.createElement(FiUserPlus as any, { className: "w-4 h-4" })}
-                {t('projectDetail.members.addMember') || 'Add Member'}
-              </button>
+              {userRole === 'owner' && (
+                <button
+                  onClick={() => setIsAddMemberModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: theme.colors.accent,
+                    color: theme.colors.primary,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.9';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                >
+                  {React.createElement(FiUserPlus as any, { className: "w-4 h-4" })}
+                  {t('projectDetail.members.addMember') || 'Add Member'}
+                </button>
+              )}
             </div>
 
             {/* Members List */}
@@ -564,9 +610,10 @@ const ProjectDetail: React.FC = () => {
                       </p>
 
                       {/* Actions */}
-                      {member.role !== 'owner' && (
+                      {member.role !== 'owner' && userRole === 'owner' && (
                         <div className="mt-4 flex gap-2">
                           <button
+                            onClick={() => handleOpenChangeRoleModal(member)}
                             className="flex-1 px-3 py-1 text-sm rounded-lg border transition-colors"
                             style={{
                               backgroundColor: 'transparent',
@@ -583,6 +630,7 @@ const ProjectDetail: React.FC = () => {
                             {t('projectDetail.members.changeRole') || 'Change Role'}
                           </button>
                           <button
+                            onClick={() => handleRemoveMember(member)}
                             className="px-3 py-1 text-sm rounded-lg border transition-colors"
                             style={{
                               backgroundColor: 'transparent',
@@ -633,6 +681,18 @@ const ProjectDetail: React.FC = () => {
         onClose={() => setIsAddMemberModalOpen(false)}
         projectId={projectId!}
         onMemberAdded={fetchMembers}
+      />
+
+      {/* Change Role Modal */}
+      <ChangeRoleModal
+        isOpen={isChangeRoleModalOpen}
+        onClose={() => {
+          setIsChangeRoleModalOpen(false);
+          setSelectedMember(null);
+        }}
+        member={selectedMember}
+        projectId={projectId!}
+        onRoleChanged={fetchMembers}
       />
     </ThemeLayout>
   );
