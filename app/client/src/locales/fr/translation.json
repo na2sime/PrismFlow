@@ -31,7 +31,8 @@
     "done": "Terminé",
     "creating": "Création...",
     "saving": "Enregistrement...",
-    "optional": "optionnelle"
+    "optional": "optionnelle",
+    "add": "Ajouter"
   },
   "auth": {
     "login": "Se connecter",

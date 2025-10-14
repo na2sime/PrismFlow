@@ -194,28 +194,32 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* Title */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
-                  {t('tasks.title')} *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder={t('tasks.titlePlaceholder') || 'Enter task title...'}
-                  className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: theme.colors.surfaceHover,
-                    borderColor: theme.colors.surfaceBorder,
-                    color: theme.colors.textPrimary,
-                  }}
-                  required
-                />
-              </div>
+              {/* Two-column layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* LEFT COLUMN - Main content */}
+                <div className="space-y-4">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
+                      {t('tasks.title')} *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      placeholder={t('tasks.titlePlaceholder') || 'Enter task title...'}
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition-all"
+                      style={{
+                        backgroundColor: theme.colors.surfaceHover,
+                        borderColor: theme.colors.surfaceBorder,
+                        color: theme.colors.textPrimary,
+                      }}
+                      required
+                    />
+                  </div>
 
-              {/* Description with Markdown support */}
-              <div className="mb-4">
+                  {/* Description with Markdown support */}
+                  <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-sm font-medium" style={{ color: theme.colors.textPrimary }}>
                     {t('tasks.description')}
@@ -378,14 +382,16 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     }}
                   />
                 )}
-              </div>
+                  </div>
+                </div>
 
-              {/* Status and Priority */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
+                {/* RIGHT COLUMN - Metadata */}
+                <div className="space-y-4">
+                  {/* Status */}
+                  <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
                     {React.createElement(FiFlag as any, { className: "w-4 h-4 inline mr-1" })}
-                    {t('tasks.status')}
+                    {t('common.status')}
                   </label>
                   <select
                     value={formData.status}
@@ -403,12 +409,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                       </option>
                     ))}
                   </select>
-                </div>
+                  </div>
 
-                <div>
+                  {/* Priority */}
+                  <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
                     {React.createElement(FiFlag as any, { className: "w-4 h-4 inline mr-1" })}
-                    {t('tasks.priority')}
+                    Priority
                   </label>
                   <select
                     value={formData.priority}
@@ -426,12 +433,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                       </option>
                     ))}
                   </select>
-                </div>
-              </div>
+                  </div>
 
-              {/* Assignee and Due Date */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
+                  {/* Assignee */}
+                  <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
                     {React.createElement(FiUser as any, { className: "w-4 h-4 inline mr-1" })}
                     {t('tasks.assignee')}
@@ -453,9 +458,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                       </option>
                     ))}
                   </select>
-                </div>
+                  </div>
 
-                <div>
+                  {/* Due Date */}
+                  <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
                     {React.createElement(FiCalendar as any, { className: "w-4 h-4 inline mr-1" })}
                     {t('tasks.dueDate')}
@@ -471,32 +477,31 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                       color: theme.colors.textPrimary,
                     }}
                   />
-                </div>
-              </div>
+                  </div>
 
-              {/* Estimated Hours */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
-                  {t('tasks.estimatedHours')}
-                </label>
-                <input
-                  type="number"
-                  value={formData.estimatedHours}
-                  onChange={(e) => setFormData({ ...formData, estimatedHours: e.target.value })}
-                  placeholder="0"
-                  min="0"
-                  step="0.5"
-                  className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    backgroundColor: theme.colors.surfaceHover,
-                    borderColor: theme.colors.surfaceBorder,
-                    color: theme.colors.textPrimary,
-                  }}
-                />
-              </div>
+                  {/* Estimated Hours */}
+                  <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
+                    {t('tasks.estimatedHours')}
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.estimatedHours}
+                    onChange={(e) => setFormData({ ...formData, estimatedHours: e.target.value })}
+                    placeholder="0"
+                    min="0"
+                    step="0.5"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 transition-all"
+                    style={{
+                      backgroundColor: theme.colors.surfaceHover,
+                      borderColor: theme.colors.surfaceBorder,
+                      color: theme.colors.textPrimary,
+                    }}
+                  />
+                  </div>
 
-              {/* Tags */}
-              <div className="mb-6">
+                  {/* Tags */}
+                  <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
                   {React.createElement(FiTag as any, { className: "w-4 h-4 inline mr-1" })}
                   {t('tasks.tags')}
@@ -555,10 +560,12 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     ))}
                   </div>
                 )}
+                  </div>
+                </div>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3">
+              <div className="flex gap-3 mt-6">
                 <button
                   type="button"
                   onClick={handleClose}

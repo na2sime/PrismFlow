@@ -31,7 +31,8 @@
     "done": "Done",
     "creating": "Creating...",
     "saving": "Saving...",
-    "optional": "optional"
+    "optional": "optional",
+    "add": "Add"
   },
   "auth": {
     "login": "Login",
