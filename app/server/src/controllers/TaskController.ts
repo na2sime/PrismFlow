@@ -8,6 +8,7 @@ const createTaskSchema = Joi.object({
   description: Joi.string().max(2000).allow(''),
   projectId: Joi.string().required(),
   assigneeId: Joi.string().allow(null),
+  status: Joi.string().valid('todo', 'in_progress', 'review', 'done', 'cancelled').default('todo'),
   priority: Joi.string().valid('low', 'medium', 'high', 'critical').default('medium'),
   dueDate: Joi.string().isoDate().allow(null),
   tags: Joi.array().items(Joi.string()),

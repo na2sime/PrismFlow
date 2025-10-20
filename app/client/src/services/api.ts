@@ -252,7 +252,7 @@ class ApiService {
 
   // Task endpoints
   async getTasks(projectId: string) {
-    const response = await this.axiosInstance.get(`/tasks?projectId=${projectId}`);
+    const response = await this.axiosInstance.get(`/tasks/project/${projectId}`);
     return response.data;
   }
 

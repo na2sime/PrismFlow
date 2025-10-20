@@ -77,6 +77,8 @@ const ProjectDetail: React.FC = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
+  const [taskModalMode, setTaskModalMode] = useState<'create' | 'edit'>('create');
 
   useEffect(() => {
     if (projectId) {
@@ -179,8 +181,9 @@ const ProjectDetail: React.FC = () => {
   };
 
   const handleTaskEdit = (task: any) => {
-    console.log('Task edit:', task);
-    // TODO: Open task edit modal
+    setSelectedTask(task);
+    setTaskModalMode('edit');
+    setIsCreateTaskModalOpen(true);
   };
 
   const handleTaskDelete = async (task: any) => {
@@ -530,7 +533,11 @@ const ProjectDetail: React.FC = () => {
               </h2>
               {userRole !== 'viewer' && (
                 <button
-                  onClick={() => setIsCreateTaskModalOpen(true)}
+                  onClick={() => {
+                    setSelectedTask(null);
+                    setTaskModalMode('create');
+                    setIsCreateTaskModalOpen(true);
+                  }}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
                   style={{
                     backgroundColor: theme.colors.accent,
@@ -762,13 +769,22 @@ const ProjectDetail: React.FC = () => {
         onRoleChanged={fetchMembers}
       />
 
-      {/* Create Task Modal */}
+      {/* Create/Edit Task Modal */}
       <CreateTaskModal
         isOpen={isCreateTaskModalOpen}
-        onClose={() => setIsCreateTaskModalOpen(false)}
+        onClose={() => {
+          setIsCreateTaskModalOpen(false);
+          setSelectedTask(null);
+          setTaskModalMode('create');
+        }}
         projectId={projectId!}
         projectMembers={members}
-        onTaskCreated={fetchTasks}
+        onTaskCreated={() => {
+          fetchTasks();
+          fetchProject(); // Refresh to update task count
+        }}
+        task={selectedTask}
+        mode={taskModalMode}
       />
     </ThemeLayout>
   );

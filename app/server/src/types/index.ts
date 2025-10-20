@@ -127,6 +127,7 @@ export interface CreateTaskRequest {
   description: string;
   projectId: string;
   assigneeId?: string;
+  status?: TaskStatus;
   priority?: TaskPriority;
   dueDate?: string;
   tags?: string[];

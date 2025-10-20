@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
@@ -19,12 +19,26 @@ import {
 import { useTheme } from '../../contexts/ThemeContext';
 import { apiService } from '../../services/api';
 
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  assigneeId: string | null;
+  dueDate: Date | null;
+  estimatedHours: number | null;
+  tags: string[];
+}
+
 interface CreateTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: string;
   projectMembers: any[];
   onTaskCreated: () => void;
+  task?: Task | null;
+  mode?: 'create' | 'edit';
 }
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
@@ -33,6 +47,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   projectId,
   projectMembers,
   onTaskCreated,
+  task = null,
+  mode = 'create',
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
@@ -53,6 +69,26 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
   const [tagInput, setTagInput] = useState('');
 
+  // Load task data when in edit mode
+  useEffect(() => {
+    if (task && mode === 'edit') {
+      setFormData({
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        priority: task.priority,
+        assigneeId: task.assigneeId || '',
+        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+        estimatedHours: task.estimatedHours ? String(task.estimatedHours) : '',
+        tags: task.tags || [],
+      });
+      // Auto-enable markdown if description contains markdown syntax
+      if (task.description && (task.description.includes('##') || task.description.includes('```') || task.description.includes('- [ ]'))) {
+        setIsMarkdown(true);
+      }
+    }
+  }, [task, mode, isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -63,23 +99,39 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
     try {
       setLoading(true);
-      await apiService.createTask({
-        projectId,
-        title: formData.title,
-        description: formData.description,
-        status: formData.status,
-        priority: formData.priority,
-        assigneeId: formData.assigneeId || null,
-        dueDate: formData.dueDate || null,
-        estimatedHours: formData.estimatedHours ? parseFloat(formData.estimatedHours) : null,
-        tags: formData.tags,
-      });
+
+      if (mode === 'edit' && task) {
+        // Update existing task
+        await apiService.updateTask(task.id, {
+          title: formData.title,
+          description: formData.description,
+          status: formData.status,
+          priority: formData.priority,
+          assigneeId: formData.assigneeId || null,
+          dueDate: formData.dueDate || null,
+          estimatedHours: formData.estimatedHours ? parseFloat(formData.estimatedHours) : null,
+          tags: formData.tags,
+        });
+      } else {
+        // Create new task
+        await apiService.createTask({
+          projectId,
+          title: formData.title,
+          description: formData.description,
+          status: formData.status,
+          priority: formData.priority,
+          assigneeId: formData.assigneeId || null,
+          dueDate: formData.dueDate || null,
+          estimatedHours: formData.estimatedHours ? parseFloat(formData.estimatedHours) : null,
+          tags: formData.tags,
+        });
+      }
 
       onTaskCreated();
       handleClose();
     } catch (error) {
-      console.error('Error creating task:', error);
-      alert(t('tasks.createError') || 'Failed to create task');
+      console.error(`Error ${mode === 'edit' ? 'updating' : 'creating'} task:`, error);
+      alert(t(mode === 'edit' ? 'tasks.updateError' : 'tasks.createError') || `Failed to ${mode === 'edit' ? 'update' : 'create'} task`);
     } finally {
       setLoading(false);
     }
@@ -173,7 +225,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold" style={{ color: theme.colors.textPrimary }}>
-                {t('tasks.createTask') || 'Create Task'}
+                {mode === 'edit' ? (t('tasks.editTask') || 'Edit Task') : (t('tasks.createTask') || 'Create Task')}
               </h2>
               <button
                 onClick={handleClose}
@@ -201,7 +253,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                   {/* Title */}
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.textPrimary }}>
-                      {t('tasks.title')} *
+                      {t('tasks.taskTitle')} *
                     </label>
                     <input
                       type="text"
@@ -621,7 +673,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     }
                   }}
                 >
-                  {loading ? t('common.creating') : t('tasks.createTask')}
+                  {loading
+                    ? (mode === 'edit' ? (t('common.updating') || 'Updating...') : (t('common.creating') || 'Creating...'))
+                    : (mode === 'edit' ? (t('tasks.updateTask') || 'Update Task') : (t('tasks.createTask') || 'Create Task'))
+                  }
                 </button>
               </div>
             </form>

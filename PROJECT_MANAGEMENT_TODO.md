@@ -23,18 +23,27 @@
 - [x] Ajouter les permissions (seul owner peut gérer les membres)
 - [ ] Afficher les statistiques par membre (tâches assignées, complétées)
 
-## ✅ Phase 3: Gestion des Tâches
-- [ ] Créer le modèle de données pour les tâches (si pas déjà fait)
-- [ ] Créer l'interface de liste des tâches
-- [ ] Créer le modal de création/édition de tâche
-- [ ] Implémenter les champs: titre, description, priorité, statut, assigné à
-- [ ] Ajouter la gestion des dates d'échéance
-- [ ] Créer le système d'étiquettes/tags
-- [ ] Implémenter les filtres (statut, priorité, assigné, tags)
+## ✅ Phase 3: Gestion des Tâches (EN COURS)
+- [x] Créer le modèle de données pour les tâches
+- [x] Créer l'interface de liste des tâches (tableau avec colonnes)
+- [x] Créer le modal de création/édition de tâche
+- [x] Implémenter les champs: titre, description, priorité, statut, assigné à
+- [x] Ajouter la gestion des dates d'échéance
+- [x] Créer le système d'étiquettes/tags
+- [x] Implémenter les filtres (statut, priorité, assigné)
+- [x] Support Markdown dans la description des tâches
+- [x] Auto-détection du Markdown lors de l'édition
+- [x] Templates Markdown (checklist, code, table, list)
+- [x] Affichage tableau avec ID, Titre, Tags (max 3), Assigné, Statut, Priorité
+- [x] Système de filtrage avec toggle show/hide
+- [x] Bouton "Clear Filters" pour réinitialiser tous les filtres
+- [x] Compteur de résultats filtrés
+- [x] Toutes les traductions EN/FR pour la gestion des tâches
 - [ ] Ajouter la recherche dans les tâches
-- [ ] Créer la vue détaillée d'une tâche
+- [ ] Créer la vue détaillée d'une tâche (modal)
 - [ ] Implémenter les commentaires sur les tâches
 - [ ] Ajouter les sous-tâches/checklist
+- [ ] Ajouter le tri par colonnes dans le tableau
 
 ## 📊 Phase 3.5: Statistiques des Membres
 - [ ] Afficher les statistiques par membre (tâches assignées, complétées)

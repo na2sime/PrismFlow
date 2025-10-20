@@ -30,6 +30,7 @@
     "permission": "permission",
     "done": "Done",
     "creating": "Creating...",
+    "updating": "Updating...",
     "saving": "Saving...",
     "optional": "optional",
     "add": "Add"
@@ -344,8 +345,12 @@
   "tasks": {
     "title": "Tasks",
     "createTask": "Create Task",
+    "editTask": "Edit Task",
+    "updateTask": "Update Task",
+    "taskTitle": "Task Title",
     "titleRequired": "Task title is required",
     "createError": "Failed to create task",
+    "updateError": "Failed to update task",
     "deleteError": "Failed to delete task",
     "confirmDelete": "Delete this task?",
     "noTasks": "No tasks yet",
@@ -365,6 +370,11 @@
     "estimatedHours": "Estimated Hours",
     "tags": "Tags",
     "addTag": "Add a tag...",
+    "filters": "Filters",
+    "showFilters": "Show Filters",
+    "clearFilters": "Clear Filters",
+    "resultsFound": "results found",
+    "noResultsFound": "No tasks match the current filters",
     "status": {
       "todo": "To Do",
       "inProgress": "In Progress",
