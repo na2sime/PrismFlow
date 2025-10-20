@@ -258,7 +258,7 @@ const TaskList: React.FC<TaskListProps> = ({
             {/* Priority Filter */}
             <div>
               <label className="block text-xs font-medium mb-1" style={{ color: theme.colors.textSecondary }}>
-                {t('tasks.priority') || 'Priority'}
+                Priority
               </label>
               <select
                 value={priorityFilter}
@@ -353,7 +353,7 @@ const TaskList: React.FC<TaskListProps> = ({
                   {t('common.status')}
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold" style={{ color: theme.colors.textSecondary }}>
-                  {t('tasks.priority')}
+                  Priority
                 </th>
                 {userRole !== 'viewer' && (
                   <th className="px-4 py-3 text-right text-xs font-semibold" style={{ color: theme.colors.textSecondary }}>

@@ -18,12 +18,24 @@ export class TaskModel {
 
   static async findByProject(projectId: string): Promise<Task[]> {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM tasks WHERE projectId = ? ORDER BY position ASC, createdAt DESC';
+      const query = `
+        SELECT
+          t.*,
+          u.id as assignee_id,
+          u.username as assignee_username,
+          u.firstName as assignee_firstName,
+          u.lastName as assignee_lastName,
+          u.profilePicture as assignee_profilePicture
+        FROM tasks t
+        LEFT JOIN users u ON t.assigneeId = u.id
+        WHERE t.projectId = ?
+        ORDER BY t.position ASC, t.createdAt DESC
+      `;
       database.getDb().all(query, [projectId], (err, rows: any[]) => {
         if (err) {
           reject(err);
         } else {
-          resolve(rows.map(row => this.mapRowToTask(row)));
+          resolve(rows.map(row => this.mapRowToTaskWithAssignee(row)));
         }
       });
     });
@@ -44,12 +56,24 @@ export class TaskModel {
 
   static async findByStatus(projectId: string, status: TaskStatus): Promise<Task[]> {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM tasks WHERE projectId = ? AND status = ? ORDER BY position ASC, createdAt DESC';
+      const query = `
+        SELECT
+          t.*,
+          u.id as assignee_id,
+          u.username as assignee_username,
+          u.firstName as assignee_firstName,
+          u.lastName as assignee_lastName,
+          u.profilePicture as assignee_profilePicture
+        FROM tasks t
+        LEFT JOIN users u ON t.assigneeId = u.id
+        WHERE t.projectId = ? AND t.status = ?
+        ORDER BY t.position ASC, t.createdAt DESC
+      `;
       database.getDb().all(query, [projectId, status], (err, rows: any[]) => {
         if (err) {
           reject(err);
         } else {
-          resolve(rows.map(row => this.mapRowToTask(row)));
+          resolve(rows.map(row => this.mapRowToTaskWithAssignee(row)));
         }
       });
     });
@@ -321,5 +345,22 @@ export class TaskModel {
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt)
     };
+  }
+
+  private static mapRowToTaskWithAssignee(row: any): Task {
+    const task = this.mapRowToTask(row);
+
+    // Add assignee details if available
+    if (row.assignee_id) {
+      (task as any).assignee = {
+        id: row.assignee_id,
+        username: row.assignee_username,
+        firstName: row.assignee_firstName,
+        lastName: row.assignee_lastName,
+        profilePicture: row.assignee_profilePicture
+      };
+    }
+
+    return task;
   }
 }

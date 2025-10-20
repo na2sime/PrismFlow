@@ -92,6 +92,10 @@ const ProjectDetail: React.FC = () => {
     }
     if (projectId && activeTab === 'tasks') {
       fetchTasks();
+      // Load members if not already loaded (needed for task assignment)
+      if (members.length === 0) {
+        fetchMembers();
+      }
     }
   }, [projectId, activeTab]);
 
